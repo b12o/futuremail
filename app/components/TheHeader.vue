@@ -12,7 +12,7 @@ const items = computed<NavigationMenuItem[]>(() => [
 
 <template>
   <UHeader title="FutureMail">
-    <template #center>
+    <template>
       <UNavigationMenu :items="items" />
     </template>
 
