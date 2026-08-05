@@ -5,20 +5,27 @@ const navItems: NavigationMenuItem[] = [
   {
     label: "New capsule",
     icon: "i-lucide-mail-plus",
+    to: "/new",
     active: true,
   },
   {
     label: "On the way",
     icon: "i-lucide-send-horizontal",
+    to: "/transit",
   },
-];
-
-const footerItems = computed<NavigationMenuItem[]>(() => [
+  {
+    label: "Delivered",
+    icon: "i-lucide-check",
+    to: "/delivered",
+  },
   {
     label: "Settings",
     icon: "i-lucide-settings",
     to: "/settings",
   },
+];
+
+const footerItems = computed<NavigationMenuItem[]>(() => [
   {
     label: "Log out",
     icon: "i-lucide-log-out",
@@ -26,10 +33,10 @@ const footerItems = computed<NavigationMenuItem[]>(() => [
 ]);
 
 const user = ref({
-  name: "Barnabas Edubio",
+  name: "b12o",
   avatar: {
     src: "https://github.com/b12o.png",
-    alt: "Barnabas Edubio",
+    alt: "b12o's profile picture",
   },
 });
 </script>
