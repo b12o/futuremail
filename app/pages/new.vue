@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const value = ref("");
+</script>
 
 <template>
   <div class="flex h-screen">
@@ -7,6 +9,7 @@
     </div>
     <div class="flex-1 flex flex-col gap-4 p-6">
       <UTextarea
+        v-model="value"
         placeholder="Dear future self..."
         :rows="12"
         class="w-full flex-1"
@@ -18,3 +21,4 @@
     </div>
   </div>
 </template>
+
