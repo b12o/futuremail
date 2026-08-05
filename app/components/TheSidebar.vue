@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
+import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 
 const navItems: NavigationMenuItem[] = [
   {
@@ -9,7 +9,7 @@ const navItems: NavigationMenuItem[] = [
     active: true,
   },
   {
-    label: "On the way",
+    label: "In transit",
     icon: "i-lucide-send-horizontal",
     to: "/transit",
   },
@@ -25,11 +25,13 @@ const navItems: NavigationMenuItem[] = [
   },
 ];
 
-const footerItems = computed<NavigationMenuItem[]>(() => [
-  {
-    label: "Log out",
-    icon: "i-lucide-log-out",
-  },
+const footerItems = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      label: "Log out",
+      icon: "i-lucide-log-out",
+    },
+  ],
 ]);
 
 const user = ref({
