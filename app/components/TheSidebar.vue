@@ -6,7 +6,6 @@ const navItems: NavigationMenuItem[] = [
     label: "New capsule",
     icon: "i-lucide-mail-plus",
     to: "/new",
-    active: true,
   },
   {
     label: "In transit",
