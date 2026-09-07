@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+export * from "./auth-schema";
+
 export const scheduledEmails = sqliteTable("scheduled_emails", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull(),
