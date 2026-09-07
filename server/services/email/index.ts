@@ -2,6 +2,8 @@ import { consoleProvider } from "./console";
 import { resendProvider } from "./resend";
 import { smtpProvider } from "./smtp";
 
+export { consoleProvider, resendProvider, smtpProvider };
+
 export interface EmailMessage {
   to: string;
   subject: string;

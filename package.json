@@ -10,7 +10,10 @@
     "postinstall": "nuxt prepare",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "dispatcher": "bun dispatcher/index.ts",
+    "test": "bun test",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@libsql/client": "^0.17.4",
@@ -24,8 +27,11 @@
     "vue-router": "^5.0.6"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.1",
     "@types/node": "^26.1.2",
     "@types/nodemailer": "^8.0.1",
-    "drizzle-kit": "^1.0.0-rc.4"
+    "drizzle-kit": "^1.0.0-rc.4",
+    "typescript": "5.9.3",
+    "vue-tsc": "^3.3.11"
   }
 }
