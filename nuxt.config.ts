@@ -7,8 +7,14 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: "Inter",
+        name: "Archivo Black",
         provider: "google",
+        weights: [400],
+      },
+      {
+        name: "Space Grotesk",
+        provider: "google",
+        weights: [400, 500, 700],
       },
     ],
   },
