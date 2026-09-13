@@ -20,13 +20,12 @@ async function signOut() {
   <header class="border-b-[3px] border-ink bg-paper">
     <div class="max-w-6xl mx-auto flex items-center gap-4 px-4 py-4 flex-wrap">
       <div
-        class="nb-card !shadow-[4px_4px_0_var(--color-ink)] !p-2 !px-4 rotate-[-1deg]"
+        class="nb-card !shadow-[4px_4px_0_var(--color-ink)] !p-2 !px-4 -rotate-1"
       >
-        <span class="font-display text-xl uppercase tracking-tight"
+        <span class="font-display text-2xl uppercase tracking-tight"
           >FutureMail</span
         >
       </div>
-      <span class="nb-sticker hidden sm:inline-flex">mail through time ⏳</span>
 
       <div class="ml-auto flex items-center gap-3 flex-wrap">
         <template v-if="props.userEmail">
