@@ -3,7 +3,6 @@ const props = defineProps<{ userEmail: string }>();
 
 const emit = defineEmits<{ scheduled: [] }>();
 
-const recipient = ref(props.userEmail);
 const subject = ref("");
 const body = ref("");
 const isEncrypted = ref(false);
@@ -82,7 +81,6 @@ async function submit() {
     const created = await $fetch<{ sendAt: string }>("/api/emails", {
       method: "POST",
       body: {
-        recipientEmail: recipient.value.trim(),
         subject: subject.value.trim(),
         body: body.value,
         isEncrypted: isEncrypted.value,
@@ -117,11 +115,12 @@ async function submit() {
         <label class="nb-label mb-1.5" for="compose-to">To</label>
         <input
           id="compose-to"
-          v-model="recipient"
+          :value="userEmail"
           type="email"
-          class="nb-input"
-          placeholder="your-future-self@example.com"
-          required
+          class="nb-input opacity-60 select-none"
+          readonly
+          tabindex="-1"
+          aria-readonly="true"
         />
       </div>
 
