@@ -8,7 +8,10 @@ const signingOut = ref(false);
 async function signOut() {
   signingOut.value = true;
   try {
-    await $fetch("/api/auth/sign-out", { method: "POST" });
+    await $fetch("/api/auth/sign-out", {
+      method: "POST",
+      body: {},
+    });
   } finally {
     signingOut.value = false;
     emit("signed-out");
