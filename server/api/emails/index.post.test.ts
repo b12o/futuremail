@@ -39,10 +39,7 @@ const nitro = globalThis as unknown as {
   defineEventHandler: (handler: unknown) => unknown;
   readBody: (event: TestEvent) => Promise<unknown>;
   setResponseStatus: (event: TestEvent, status: number) => void;
-  createError: (input: {
-    statusCode: number;
-    statusMessage: string;
-  }) => Error;
+  createError: (input: { statusCode: number; statusMessage: string }) => Error;
 };
 
 nitro.defineEventHandler = (handler) => handler;

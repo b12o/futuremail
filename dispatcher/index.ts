@@ -12,7 +12,9 @@ function backoffMs(attempts: number): number {
   return Math.min(2 ** attempts * 60_000, 3_600_000);
 }
 
-async function processTick(provider: ReturnType<typeof resolveEmailProvider>): Promise<void> {
+async function processTick(
+  provider: ReturnType<typeof resolveEmailProvider>,
+): Promise<void> {
   try {
     const claimed = await claimDueEmails(CLAIM_BATCH_SIZE);
     if (claimed.length > 0) {

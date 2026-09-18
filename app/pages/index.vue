@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import type { SessionData } from "~/types/email"
+import type { SessionData } from "~/types/email";
 
-const { data: session, status, refresh: refreshSession } = useFetch<SessionData>("/api/auth/get-session")
+const {
+  data: session,
+  status,
+  refresh: refreshSession,
+} = useFetch<SessionData>("/api/auth/get-session");
 
-const user = computed(() => session.value?.user ?? null)
-const signedIn = computed(() => !!user.value)
+const user = computed(() => session.value?.user ?? null);
+const signedIn = computed(() => !!user.value);
 
-const transitBoard = useTemplateRef<{ refresh: () => void } | null>("transitBoard")
+const transitBoard = useTemplateRef<{ refresh: () => void } | null>(
+  "transitBoard",
+);
 
 async function onSignedOut() {
-  await refreshSession()
+  await refreshSession();
 }
 </script>
 

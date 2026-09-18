@@ -66,7 +66,9 @@ describe("resendProvider", () => {
   test("throws on non-ok responses", async () => {
     process.env.RESEND_API_KEY = "re_test_key";
     globalThis.fetch = (async () =>
-      new Response("Invalid API key", { status: 401 })) as unknown as typeof fetch;
+      new Response("Invalid API key", {
+        status: 401,
+      })) as unknown as typeof fetch;
 
     expect(resendProvider.send(message)).rejects.toThrow(
       "Resend send failed (401): Invalid API key",

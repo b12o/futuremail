@@ -19,7 +19,8 @@ export default defineEventHandler(async (event) => {
   if (
     body?.recipientEmail !== undefined &&
     (typeof body.recipientEmail !== "string" ||
-      body.recipientEmail.trim().toLowerCase() !== session.user.email.toLowerCase())
+      body.recipientEmail.trim().toLowerCase() !==
+        session.user.email.toLowerCase())
   ) {
     throw createError({
       statusCode: 400,
@@ -28,13 +29,19 @@ export default defineEventHandler(async (event) => {
   }
   const recipientEmail = session.user.email;
   if (typeof body?.subject !== "string" || body.subject.trim().length === 0) {
-    throw createError({ statusCode: 400, statusMessage: "subject is required" });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "subject is required",
+    });
   }
   if (typeof body?.body !== "string" || body.body.length === 0) {
     throw createError({ statusCode: 400, statusMessage: "body is required" });
   }
   if (body.isEncrypted !== undefined && typeof body.isEncrypted !== "boolean") {
-    throw createError({ statusCode: 400, statusMessage: "isEncrypted must be a boolean" });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "isEncrypted must be a boolean",
+    });
   }
 
   const sendAt = new Date(String(body.sendAt));
@@ -45,7 +52,10 @@ export default defineEventHandler(async (event) => {
     });
   }
   if (sendAt.getTime() <= Date.now()) {
-    throw createError({ statusCode: 400, statusMessage: "sendAt must be in the future" });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "sendAt must be in the future",
+    });
   }
 
   const [row] = await db

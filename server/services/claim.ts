@@ -20,5 +20,8 @@ export async function claimDueEmails(batchSize: number) {
   if (ids.length === 0) {
     return [];
   }
-  return db.select().from(scheduledEmails).where(inArray(scheduledEmails.id, ids));
+  return db
+    .select()
+    .from(scheduledEmails)
+    .where(inArray(scheduledEmails.id, ids));
 }

@@ -46,7 +46,8 @@ export function createSmtpProvider(
       }
       const transport = createTransport(config);
       await transport.sendMail({
-        from: process.env.EMAIL_FROM ?? "FutureMail <no-reply@futuremail.local>",
+        from:
+          process.env.EMAIL_FROM ?? "FutureMail <no-reply@futuremail.local>",
         to: message.to,
         subject: message.subject,
         text: message.body,

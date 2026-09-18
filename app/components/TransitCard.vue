@@ -1,33 +1,38 @@
 <script setup lang="ts">
-import type { ScheduledEmail } from "~/types/email"
+import type { ScheduledEmail } from "~/types/email";
 
-const props = defineProps<{ email: ScheduledEmail }>()
+const props = defineProps<{ email: ScheduledEmail }>();
 
-const now = useNow()
+const now = useNow();
 
-const remainingMs = computed(() => new Date(props.email.sendAt).getTime() - now.value)
+const remainingMs = computed(
+  () => new Date(props.email.sendAt).getTime() - now.value,
+);
 
 const countdown = computed(() => {
-  if (remainingMs.value <= 0) return "ARRIVING…"
-  const total = Math.floor(remainingMs.value / 1000)
-  const d = Math.floor(total / 86_400)
-  const h = Math.floor((total % 86_400) / 3_600)
-  const m = Math.floor((total % 3_600) / 60)
-  const s = total % 60
-  const clock = `${pad(h)}:${pad(m)}:${pad(s)}`
-  return d > 0 ? `${pad(d)}d ${clock}` : clock
-})
+  if (remainingMs.value <= 0) return "ARRIVING…";
+  const total = Math.floor(remainingMs.value / 1000);
+  const d = Math.floor(total / 86_400);
+  const h = Math.floor((total % 86_400) / 3_600);
+  const m = Math.floor((total % 3_600) / 60);
+  const s = total % 60;
+  const clock = `${pad(h)}:${pad(m)}:${pad(s)}`;
+  return d > 0 ? `${pad(d)}d ${clock}` : clock;
+});
 
 function pad(n: number) {
-  return String(n).padStart(2, "0")
+  return String(n).padStart(2, "0");
 }
 
 const progress = computed(() => {
-  const start = new Date(props.email.createdAt).getTime()
-  const end = new Date(props.email.sendAt).getTime()
-  if (end <= start) return 100
-  return Math.min(100, Math.max(0, ((now.value - start) / (end - start)) * 100))
-})
+  const start = new Date(props.email.createdAt).getTime();
+  const end = new Date(props.email.sendAt).getTime();
+  if (end <= start) return 100;
+  return Math.min(
+    100,
+    Math.max(0, ((now.value - start) / (end - start)) * 100),
+  );
+});
 </script>
 
 <template>

@@ -2,9 +2,7 @@
   "version": "7",
   "dialect": "sqlite",
   "id": "2cf0ca2b-9af4-4a2a-bc16-31af95052267",
-  "prevIds": [
-    "162c289f-ba57-4a87-a310-99ce200beb11"
-  ],
+  "prevIds": ["162c289f-ba57-4a87-a310-99ce200beb11"],
   "ddl": [
     {
       "name": "scheduled_emails",
@@ -477,13 +475,9 @@
       "table": "verification"
     },
     {
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "nameExplicit": false,
@@ -492,13 +486,9 @@
       "table": "account"
     },
     {
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "nameExplicit": false,
@@ -507,45 +497,35 @@
       "table": "session"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "scheduled_emails_pk",
       "table": "scheduled_emails",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "account_pk",
       "table": "account",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "session_pk",
       "table": "session",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "user_pk",
       "table": "user",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "verification_pk",
       "table": "verification",
@@ -594,18 +574,14 @@
       "table": "verification"
     },
     {
-      "columns": [
-        "token"
-      ],
+      "columns": ["token"],
       "nameExplicit": false,
       "name": "session_token_unique",
       "entityType": "uniques",
       "table": "session"
     },
     {
-      "columns": [
-        "email"
-      ],
+      "columns": ["email"],
       "nameExplicit": false,
       "name": "user_email_unique",
       "entityType": "uniques",

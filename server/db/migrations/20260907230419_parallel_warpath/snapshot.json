@@ -2,9 +2,7 @@
   "version": "7",
   "dialect": "sqlite",
   "id": "162c289f-ba57-4a87-a310-99ce200beb11",
-  "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
-  ],
+  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
       "name": "scheduled_emails",
@@ -121,9 +119,7 @@
       "table": "scheduled_emails"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "scheduled_emails_pk",
       "table": "scheduled_emails",

@@ -1,32 +1,32 @@
 <script setup lang="ts">
-const email = ref("")
-const submitting = ref(false)
-const sent = ref(false)
-const error = ref("")
+const email = ref("");
+const submitting = ref(false);
+const sent = ref(false);
+const error = ref("");
 
 async function submit() {
   if (!email.value.trim()) {
-    error.value = "Enter an email address"
-    return
+    error.value = "Enter an email address";
+    return;
   }
-  submitting.value = true
-  error.value = ""
+  submitting.value = true;
+  error.value = "";
   try {
     await $fetch("/api/auth/sign-in/magic-link", {
       method: "POST",
       body: { email: email.value.trim(), callbackURL: "/" },
-    })
-    sent.value = true
+    });
+    sent.value = true;
   } catch (e) {
-    error.value = errorMessage(e)
+    error.value = errorMessage(e);
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
 }
 
 function reset() {
-  sent.value = false
-  error.value = ""
+  sent.value = false;
+  error.value = "";
 }
 </script>
 

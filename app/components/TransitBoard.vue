@@ -1,35 +1,39 @@
 <script setup lang="ts">
-import type { ScheduledEmail } from "~/types/email"
+import type { ScheduledEmail } from "~/types/email";
 
 const { data, refresh } = useFetch<ScheduledEmail[]>("/api/emails", {
   default: () => [] as ScheduledEmail[],
-})
+});
 
-let pollTimer: ReturnType<typeof setInterval> | undefined
+let pollTimer: ReturnType<typeof setInterval> | undefined;
 
 onMounted(() => {
   pollTimer = setInterval(() => {
-    refresh()
-  }, 30_000)
-})
+    refresh();
+  }, 30_000);
+});
 
 onUnmounted(() => {
-  if (pollTimer) clearInterval(pollTimer)
-})
+  if (pollTimer) clearInterval(pollTimer);
+});
 
-const rows = computed(() => data.value ?? [])
+const rows = computed(() => data.value ?? []);
 
 const inTransit = computed(() =>
   rows.value
     .filter((r) => r.status === "pending" || r.status === "sending")
-    .sort((a, b) => new Date(a.sendAt).getTime() - new Date(b.sendAt).getTime()),
-)
+    .sort(
+      (a, b) => new Date(a.sendAt).getTime() - new Date(b.sendAt).getTime(),
+    ),
+);
 
-const delivered = computed(() => rows.value.filter((r) => r.status === "delivered"))
+const delivered = computed(() =>
+  rows.value.filter((r) => r.status === "delivered"),
+);
 
-const failed = computed(() => rows.value.filter((r) => r.status === "failed"))
+const failed = computed(() => rows.value.filter((r) => r.status === "failed"));
 
-defineExpose({ refresh })
+defineExpose({ refresh });
 </script>
 
 <template>
