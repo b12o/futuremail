@@ -2,8 +2,6 @@ import { db } from "../../db";
 import { scheduledEmails } from "../../db/schema";
 import { auth } from "../../auth";
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export default defineEventHandler(async (event) => {
   const session = await auth.api.getSession({ headers: event.headers });
   if (!session?.user) {
@@ -18,12 +16,17 @@ export default defineEventHandler(async (event) => {
     sendAt?: unknown;
   }>(event);
 
-  if (typeof body?.recipientEmail !== "string" || !EMAIL_PATTERN.test(body.recipientEmail)) {
+  if (
+    body?.recipientEmail !== undefined &&
+    (typeof body.recipientEmail !== "string" ||
+      body.recipientEmail.trim().toLowerCase() !== session.user.email.toLowerCase())
+  ) {
     throw createError({
       statusCode: 400,
-      statusMessage: "recipientEmail must be a valid email address",
+      statusMessage: "recipientEmail must be the signed-in user's email",
     });
   }
+  const recipientEmail = session.user.email;
   if (typeof body?.subject !== "string" || body.subject.trim().length === 0) {
     throw createError({ statusCode: 400, statusMessage: "subject is required" });
   }
@@ -50,7 +53,7 @@ export default defineEventHandler(async (event) => {
     .values({
       id: crypto.randomUUID(),
       userId: session.user.id,
-      recipientEmail: body.recipientEmail,
+      recipientEmail,
       subject: body.subject,
       body: body.body,
       isEncrypted: body.isEncrypted ?? false,
