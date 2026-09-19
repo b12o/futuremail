@@ -1,16 +1,22 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { execSync } from "node:child_process";
 import type { ScheduledEmail } from "../db/schema";
 
 process.env.DATABASE_URL = `file:/tmp/futuremail-claim-test-${crypto.randomUUID()}.db`;
 
-const { runMigrations, client, db } = await import("../db");
+const { client, db } = await import("../db");
 const { scheduledEmails } = await import("../db/schema");
 const { claimDueEmails, releaseStaleClaims } = await import("./claim");
 
 let allRows: ScheduledEmail[] = [];
 
 beforeAll(async () => {
-  await runMigrations();
+  // Migrations are paused during prototyping, so build the throwaway test
+  // database straight from the current drizzle schema in `schema.ts`.
+  execSync("bunx drizzle-kit push --force", {
+    env: process.env,
+    stdio: "ignore",
+  });
   const now = new Date();
   allRows = await db
     .insert(scheduledEmails)

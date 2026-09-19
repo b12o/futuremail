@@ -1,11 +1,5 @@
 import { eq } from "drizzle-orm";
-import {
-  autoMigrateEnabled,
-  client,
-  db,
-  initDb,
-  runMigrations,
-} from "../server/db";
+import { client, db, initDb } from "../server/db";
 import { scheduledEmails } from "../server/db/schema";
 import { claimDueEmails, releaseStaleClaims } from "../server/services/claim";
 import { resolveEmailProvider } from "../server/services/email";
@@ -95,9 +89,11 @@ async function processTick(
 
 async function main(): Promise<void> {
   await initDb();
-  if (autoMigrateEnabled()) {
-    await runMigrations();
-  }
+  // Migrations are paused while the schema is prototyped with `bun run db:push`.
+  // Uncomment (and re-import autoMigrateEnabled/runMigrations) once the schema stabilizes.
+  // if (autoMigrateEnabled()) {
+  //   await runMigrations();
+  // }
   const provider = resolveEmailProvider();
   console.log(
     `[dispatcher] starting: provider=${provider.name} poll=${POLL_INTERVAL_MS}ms batch=${CLAIM_BATCH_SIZE} retries=${JOB_RETRY_COUNT} claimTimeout=${CLAIM_TIMEOUT_MS}ms`,

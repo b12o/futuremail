@@ -10,6 +10,7 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 - `bun run preview` — preview production build
 - `bun run test` — bun test
 - `bun run typecheck` — nuxt typecheck
+- `bun run db:push` — apply `schema.ts` directly to the dev DB (prototyping; no migration files)
 - `bun run dispatcher` — standalone email dispatcher poller
 
 ## Structure
@@ -26,12 +27,12 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 ## Backend
 
 - `server/` — Nitro backend
-- `server/db/` — drizzle schema (`schema.ts`, `auth-schema.ts`) + migrations
+- `server/db/` — drizzle schema (`schema.ts`, `auth-schema.ts`); migrations are paused during prototyping
 - `server/auth.ts` — better-auth with emailed OTP (no magic link)
 - `server/api/` — auth catch-all, `POST /api/emails`, `GET /api/emails`
 - `server/services/email/` — email providers (resend, smtp, console)
 - `server/services/claim.ts` — email claim logic
-- `server/plugins/db.ts` — initializes the db (WAL) on boot; runs migrations only when `DB_AUTO_MIGRATE=true`
+- `server/plugins/db.ts` — initializes the db (WAL + foreign keys) on boot; automatic migrations are commented out during prototyping
 - `dispatcher/index.ts` — standalone poller (`bun run dispatcher`)
 
 ## Key conventions
@@ -51,4 +52,4 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 - drizzle-orm is v1 rc — use `drizzle({ client })` signature, no `relations()` export
 - TypeScript pinned to 5.9.x (TS 7 breaks vue-tsc)
 - In-transit emails (status pending/sending) must never expose subject/body through the API
-- Migrations are opt-in via `DB_AUTO_MIGRATE`; use `bun run db:push` while prototyping, `bun run db:generate` + set `DB_AUTO_MIGRATE=true` (or `bun run db:migrate`) for production
+- **DB schema is in a prototyping phase — migrations are intentionally paused.** After any `schema.ts` change run `bun run db:push`; do NOT run `db:generate`/`db:migrate`, and leave `DB_AUTO_MIGRATE` unset. `runMigrations()` in `server/db/index.ts` and its call sites in `server/plugins/db.ts` and `dispatcher/index.ts` are commented out. `server/services/claim.test.ts` builds its throwaway DB with `bunx drizzle-kit push --force`. **When the schema stabilizes:** uncomment those blocks (re-import `autoMigrateEnabled`/`runMigrations`), run `bun run db:generate` to create one baseline migration, commit it, then set `DB_AUTO_MIGRATE=true` (or run `bun run db:migrate`) for production.
