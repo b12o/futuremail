@@ -24,7 +24,10 @@ async function onSignedOut() {
     <AppHeader :user-email="user?.email ?? null" @signed-out="onSignedOut" />
 
     <main class="max-w-6xl w-full mx-auto p-4 md:p-6 flex-1">
-      <div v-if="status === 'pending'" class="flex flex-col gap-4 max-w-xl mx-auto">
+      <div
+        v-if="status === 'pending'"
+        class="flex flex-col gap-4 max-w-xl mx-auto"
+      >
         <div class="nb-card h-64 animate-pulse" />
         <div class="nb-card h-32 animate-pulse" />
       </div>
@@ -40,7 +43,10 @@ async function onSignedOut() {
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
         <div class="lg:col-span-3">
-          <ComposeCard :user-email="user!.email" @scheduled="transitBoard?.refresh()" />
+          <ComposeCard
+            :user-email="user!.email"
+            @scheduled="transitBoard?.refresh()"
+          />
         </div>
         <div class="lg:col-span-2">
           <TransitBoard ref="transitBoard" />
@@ -48,8 +54,10 @@ async function onSignedOut() {
       </div>
     </main>
 
-    <footer class="border-t-[3px] border-ink py-3 px-4 text-center text-xs font-bold uppercase tracking-wider">
-      FutureMail — self-hosted · your data stays in your SQLite file
+    <footer
+      class="border-t-[3px] border-ink py-3 px-4 text-center text-xs font-bold uppercase tracking-wider"
+    >
+      © {{ new Date().getFullYear() }} FutureMail.to · self hosted
     </footer>
   </div>
 </template>
