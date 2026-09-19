@@ -1,10 +1,21 @@
 <script setup lang="ts">
+const emit = defineEmits<{ "signed-in": [] }>();
+
 const email = ref("");
+const code = ref("");
+const step = ref<"email" | "code">("email");
 const submitting = ref(false);
-const sent = ref(false);
+const resending = ref(false);
 const error = ref("");
 
-async function submit() {
+async function sendCode() {
+  await $fetch("/api/auth/email-otp/send-verification-otp", {
+    method: "POST",
+    body: { email: email.value.trim(), type: "sign-in" },
+  });
+}
+
+async function submitEmail() {
   if (!email.value.trim()) {
     error.value = "Enter an email address";
     return;
@@ -12,11 +23,8 @@ async function submit() {
   submitting.value = true;
   error.value = "";
   try {
-    await $fetch("/api/auth/sign-in/magic-link", {
-      method: "POST",
-      body: { email: email.value.trim(), callbackURL: "/" },
-    });
-    sent.value = true;
+    await sendCode();
+    step.value = "code";
   } catch (e) {
     error.value = errorMessage(e);
   } finally {
@@ -24,19 +32,55 @@ async function submit() {
   }
 }
 
+async function submitCode() {
+  if (!/^\d{6}$/.test(code.value.trim())) {
+    error.value = "Enter the 6-digit code";
+    return;
+  }
+  submitting.value = true;
+  error.value = "";
+  try {
+    await $fetch("/api/auth/sign-in/email-otp", {
+      method: "POST",
+      body: { email: email.value.trim(), otp: code.value.trim() },
+    });
+    emit("signed-in");
+  } catch (e) {
+    error.value = errorMessage(e);
+  } finally {
+    submitting.value = false;
+  }
+}
+
+async function resend() {
+  resending.value = true;
+  error.value = "";
+  try {
+    await sendCode();
+    code.value = "";
+  } catch (e) {
+    error.value = errorMessage(e);
+  } finally {
+    resending.value = false;
+  }
+}
+
 function reset() {
-  sent.value = false;
+  step.value = "email";
+  code.value = "";
   error.value = "";
 }
 </script>
 
 <template>
   <div class="nb-card w-full max-w-md mx-auto">
-    <template v-if="!sent">
+    <template v-if="step === 'email'">
       <h2 class="font-display text-2xl uppercase mb-1">Sign in</h2>
-      <p class="text-sm mb-5 opacity-70">We mail you a one-time link. No passwords, ever.</p>
+      <p class="text-sm mb-5 opacity-70">
+        We mail you a 6-digit code. No passwords, ever.
+      </p>
 
-      <form class="flex flex-col gap-4" @submit.prevent="submit">
+      <form class="flex flex-col gap-4" @submit.prevent="submitEmail">
         <div>
           <label class="nb-label mb-1.5" for="signin-email">Email</label>
           <input
@@ -54,7 +98,7 @@ function reset() {
 
         <button type="submit" class="nb-btn nb-btn-yellow" :disabled="submitting">
           <span v-if="submitting">Sending…</span>
-          <span v-else>Send magic link ✉</span>
+          <span v-else>Send code ✉</span>
         </button>
       </form>
     </template>
@@ -62,13 +106,53 @@ function reset() {
     <template v-else>
       <h2 class="font-display text-2xl uppercase mb-2">Check your inbox ✉</h2>
       <p class="text-sm mb-2">
-        A magic link is on its way to
+        Enter the code we sent to
         <span class="font-bold">{{ email.trim() }}</span>
       </p>
-      <p class="text-sm mb-5 opacity-70">The link expires in 5 minutes.</p>
-      <button type="button" class="underline font-bold text-sm" @click="reset">
-        Use a different email
-      </button>
+      <p class="text-sm mb-5 opacity-70">The code expires in 5 minutes.</p>
+
+      <form class="flex flex-col gap-4" @submit.prevent="submitCode">
+        <div>
+          <label class="nb-label mb-1.5" for="signin-code">Code</label>
+          <input
+            id="signin-code"
+            v-model="code"
+            type="text"
+            class="nb-input tracking-[0.5em] text-center font-display text-xl"
+            placeholder="······"
+            inputmode="numeric"
+            pattern="\d{6}"
+            maxlength="6"
+            autocomplete="one-time-code"
+            required
+          />
+        </div>
+
+        <p v-if="error" class="nb-badge nb-badge-red self-start">{{ error }}</p>
+
+        <button type="submit" class="nb-btn nb-btn-yellow" :disabled="submitting">
+          <span v-if="submitting">Verifying…</span>
+          <span v-else>Verify & sign in</span>
+        </button>
+
+        <div class="flex items-center justify-between text-sm">
+          <button
+            type="button"
+            class="underline font-bold disabled:opacity-50"
+            :disabled="resending"
+            @click="resend"
+          >
+            {{ resending ? "Resending…" : "Resend code" }}
+          </button>
+          <button
+            type="button"
+            class="underline font-bold"
+            @click="reset"
+          >
+            Use a different email
+          </button>
+        </div>
+      </form>
     </template>
   </div>
 </template>

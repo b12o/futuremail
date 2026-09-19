@@ -38,7 +38,7 @@ async function onSignedOut() {
           <span class="nb-sticker nb-sticker-r !bg-nb-pink">No tracking</span>
           <span class="nb-sticker !bg-nb-cyan">Time-proof</span>
         </div>
-        <SignInCard />
+        <SignInCard @signed-in="refreshSession" />
       </div>
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">

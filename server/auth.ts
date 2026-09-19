@@ -1,9 +1,15 @@
 import { betterAuth } from "better-auth";
-import { magicLink } from "better-auth/plugins";
+import { emailOTP } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { resolveEmailProvider } from "./services/email";
+import {
+  OTP_ALLOWED_ATTEMPTS,
+  OTP_EXPIRES_IN_SECONDS,
+  OTP_LENGTH,
+  buildOtpEmail,
+} from "./services/email/messages";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
@@ -13,16 +19,15 @@ export const auth = betterAuth({
     schema,
   }),
   plugins: [
-    magicLink({
-      sendMagicLink: async ({ email, url }) => {
+    emailOTP({
+      otpLength: OTP_LENGTH,
+      expiresIn: OTP_EXPIRES_IN_SECONDS,
+      allowedAttempts: OTP_ALLOWED_ATTEMPTS,
+      storeOTP: "hashed",
+      sendVerificationOTP: async ({ email, otp }) => {
         const provider = resolveEmailProvider();
-        await provider.send({
-          to: email,
-          subject: "Sign in to FutureMail",
-          body: `Click the link below to sign in to FutureMail:\n\n${url}\n\nThis link expires in 5 minutes.`,
-        });
+        await provider.send(buildOtpEmail({ to: email, otp }));
       },
-      expiresIn: 300,
     }),
   ],
 });
