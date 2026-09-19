@@ -16,6 +16,7 @@ export const scheduledEmails = sqliteTable("scheduled_emails", {
   status: text("status").notNull().default("pending"),
   attempts: integer("attempts").notNull().default(0),
   nextRetryAt: integer("next_retry_at", { mode: "timestamp" }),
+  claimedAt: integer("claimed_at", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

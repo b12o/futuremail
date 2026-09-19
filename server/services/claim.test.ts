@@ -3,14 +3,14 @@ import type { ScheduledEmail } from "../db/schema";
 
 process.env.DATABASE_URL = `file:/tmp/futuremail-claim-test-${crypto.randomUUID()}.db`;
 
-const { initDb, client, db } = await import("../db");
+const { runMigrations, client, db } = await import("../db");
 const { scheduledEmails } = await import("../db/schema");
-const { claimDueEmails } = await import("./claim");
+const { claimDueEmails, releaseStaleClaims } = await import("./claim");
 
 let allRows: ScheduledEmail[] = [];
 
 beforeAll(async () => {
-  await initDb();
+  await runMigrations();
   const now = new Date();
   allRows = await db
     .insert(scheduledEmails)
@@ -107,5 +107,62 @@ describe("claimDueEmails", () => {
     );
     const claimed = await claimDueEmails(3);
     expect(claimed.length).toBe(3);
+  });
+});
+
+describe("releaseStaleClaims", () => {
+  test("reaps stale and legacy claims, leaves fresh and non-sending rows", async () => {
+    const now = Date.now();
+    const base = {
+      userId: "user-1",
+      recipientEmail: "dest@example.com",
+      body: "body",
+      sendAt: new Date(now - 60_000),
+    };
+    await db.insert(scheduledEmails).values([
+      {
+        ...base,
+        id: "stale-claim",
+        subject: "stale",
+        status: "sending",
+        claimedAt: new Date(now - 600_000),
+      },
+      {
+        ...base,
+        id: "legacy-claim",
+        subject: "legacy",
+        status: "sending",
+        claimedAt: null,
+      },
+      {
+        ...base,
+        id: "fresh-claim",
+        subject: "fresh",
+        status: "sending",
+        claimedAt: new Date(now),
+      },
+    ]);
+
+    const released = await releaseStaleClaims(300_000);
+    expect(released).toBe(2);
+
+    const rows = await db.select().from(scheduledEmails);
+    const byId = (id: string) => rows.find((row) => row.id === id);
+    expect(byId("stale-claim")?.status).toBe("pending");
+    expect(byId("stale-claim")?.claimedAt).toBeNull();
+    expect(byId("legacy-claim")?.status).toBe("pending");
+    expect(byId("fresh-claim")?.status).toBe("sending");
+    expect(byId("fresh-claim")?.claimedAt).not.toBeNull();
+  });
+
+  test("released rows are claimable again", async () => {
+    const claimed = await claimDueEmails(25);
+    const ids = claimed.map((row) => row.id).sort();
+    expect(ids).toContain("stale-claim");
+    expect(ids).toContain("legacy-claim");
+    expect(ids).not.toContain("fresh-claim");
+    for (const row of claimed) {
+      expect(row.claimedAt).not.toBeNull();
+    }
   });
 });

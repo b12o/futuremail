@@ -1,12 +1,19 @@
 import { eq } from "drizzle-orm";
-import { client, db, initDb } from "../server/db";
+import {
+  autoMigrateEnabled,
+  client,
+  db,
+  initDb,
+  runMigrations,
+} from "../server/db";
 import { scheduledEmails } from "../server/db/schema";
+import { claimDueEmails, releaseStaleClaims } from "../server/services/claim";
 import { resolveEmailProvider } from "../server/services/email";
-import { claimDueEmails } from "../server/services/claim";
 
 const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS ?? 60_000);
 const CLAIM_BATCH_SIZE = Number(process.env.CLAIM_BATCH_SIZE ?? 25);
 const JOB_RETRY_COUNT = Number(process.env.JOB_RETRY_COUNT ?? 3);
+const CLAIM_TIMEOUT_MS = Number(process.env.CLAIM_TIMEOUT_MS ?? 300_000);
 
 function backoffMs(attempts: number): number {
   return Math.min(2 ** attempts * 60_000, 3_600_000);
@@ -16,6 +23,10 @@ async function processTick(
   provider: ReturnType<typeof resolveEmailProvider>,
 ): Promise<void> {
   try {
+    const reaped = await releaseStaleClaims(CLAIM_TIMEOUT_MS);
+    if (reaped > 0) {
+      console.warn(`[dispatcher] released ${reaped} stale claim(s)`);
+    }
     const claimed = await claimDueEmails(CLAIM_BATCH_SIZE);
     if (claimed.length > 0) {
       console.log(`[dispatcher] claimed ${claimed.length} email(s)`);
@@ -29,7 +40,7 @@ async function processTick(
         });
         await db
           .update(scheduledEmails)
-          .set({ status: "delivered", nextRetryAt: null })
+          .set({ status: "delivered", nextRetryAt: null, claimedAt: null })
           .where(eq(scheduledEmails.id, email.id));
         console.log(`[dispatcher] delivered ${email.id}`);
       } catch (error) {
@@ -41,6 +52,7 @@ async function processTick(
               status: "pending",
               attempts,
               nextRetryAt: new Date(Date.now() + backoffMs(attempts)),
+              claimedAt: null,
             })
             .where(eq(scheduledEmails.id, email.id));
           console.warn(
@@ -50,7 +62,12 @@ async function processTick(
         } else {
           await db
             .update(scheduledEmails)
-            .set({ status: "failed", attempts, nextRetryAt: null })
+            .set({
+              status: "failed",
+              attempts,
+              nextRetryAt: null,
+              claimedAt: null,
+            })
             .where(eq(scheduledEmails.id, email.id));
           console.error(
             `[dispatcher] send failed for ${email.id} permanently (${attempts} attempts):`,
@@ -78,9 +95,12 @@ async function processTick(
 
 async function main(): Promise<void> {
   await initDb();
+  if (autoMigrateEnabled()) {
+    await runMigrations();
+  }
   const provider = resolveEmailProvider();
   console.log(
-    `[dispatcher] starting: provider=${provider.name} poll=${POLL_INTERVAL_MS}ms batch=${CLAIM_BATCH_SIZE} retries=${JOB_RETRY_COUNT}`,
+    `[dispatcher] starting: provider=${provider.name} poll=${POLL_INTERVAL_MS}ms batch=${CLAIM_BATCH_SIZE} retries=${JOB_RETRY_COUNT} claimTimeout=${CLAIM_TIMEOUT_MS}ms`,
   );
 
   let inFlight: Promise<void> | null = null;

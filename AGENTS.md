@@ -27,11 +27,11 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 
 - `server/` — Nitro backend
 - `server/db/` — drizzle schema (`schema.ts`, `auth-schema.ts`) + migrations
-- `server/auth.ts` — better-auth with magic link
+- `server/auth.ts` — better-auth with emailed OTP (no magic link)
 - `server/api/` — auth catch-all, `POST /api/emails`, `GET /api/emails`
 - `server/services/email/` — email providers (resend, smtp, console)
 - `server/services/claim.ts` — email claim logic
-- `server/plugins/db.ts` — db client plugin
+- `server/plugins/db.ts` — initializes the db (WAL) on boot; runs migrations only when `DB_AUTO_MIGRATE=true`
 - `dispatcher/index.ts` — standalone poller (`bun run dispatcher`)
 
 ## Key conventions
@@ -51,3 +51,4 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 - drizzle-orm is v1 rc — use `drizzle({ client })` signature, no `relations()` export
 - TypeScript pinned to 5.9.x (TS 7 breaks vue-tsc)
 - In-transit emails (status pending/sending) must never expose subject/body through the API
+- Migrations are opt-in via `DB_AUTO_MIGRATE`; use `bun run db:push` while prototyping, `bun run db:generate` + set `DB_AUTO_MIGRATE=true` (or `bun run db:migrate`) for production
