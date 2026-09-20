@@ -5,12 +5,14 @@ const { data, refresh } = useFetch<ScheduledEmail[]>("/api/emails", {
   default: () => [] as ScheduledEmail[],
 });
 
+const POLL_INTERVAL_MS = 5_000;
+
 let pollTimer: ReturnType<typeof setInterval> | undefined;
 
 onMounted(() => {
   pollTimer = setInterval(() => {
     refresh();
-  }, 30_000);
+  }, POLL_INTERVAL_MS);
 });
 
 onUnmounted(() => {
@@ -48,7 +50,12 @@ defineExpose({ refresh });
       <p class="text-sm opacity-70">Send your first capsule →</p>
     </div>
 
-    <TransitCard v-for="email in inTransit" :key="email.id" :email />
+    <TransitCard
+      v-for="email in inTransit"
+      :key="email.id"
+      :email
+      @departed="refresh()"
+    />
 
     <template v-if="delivered.length > 0">
       <div class="nb-divider my-2" />
