@@ -1,8 +1,9 @@
 import { consoleProvider } from "./console";
+import { mockProvider } from "./mock";
 import { resendProvider } from "./resend";
 import { smtpProvider } from "./smtp";
 
-export { consoleProvider, resendProvider, smtpProvider };
+export { consoleProvider, mockProvider, resendProvider, smtpProvider };
 
 export interface EmailMessage {
   to: string;
@@ -16,6 +17,11 @@ export interface EmailProvider {
 }
 
 export function resolveEmailProvider(): EmailProvider {
+  // Development-only override: pretend all sends succeed (see ./mock.ts).
+  // Takes precedence over every real provider so it is a single kill switch.
+  if (process.env.MOCK_DISPATCHER === "true") {
+    return mockProvider;
+  }
   if (process.env.RESEND_API_KEY) {
     return resendProvider;
   }

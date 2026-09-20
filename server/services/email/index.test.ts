@@ -1,8 +1,13 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { consoleProvider, resolveEmailProvider } from "./index";
+import { consoleProvider, mockProvider, resolveEmailProvider } from "./index";
 import type { EmailProvider } from "./index";
 
-const ENV_KEYS = ["RESEND_API_KEY", "SMTP_HOST", "NODE_ENV"] as const;
+const ENV_KEYS = [
+  "RESEND_API_KEY",
+  "SMTP_HOST",
+  "NODE_ENV",
+  "MOCK_DISPATCHER",
+] as const;
 
 afterEach(() => {
   for (const key of ENV_KEYS) {
@@ -11,6 +16,24 @@ afterEach(() => {
 });
 
 describe("resolveEmailProvider", () => {
+  test("resolves mock when MOCK_DISPATCHER=true", () => {
+    process.env.MOCK_DISPATCHER = "true";
+    expect(resolveEmailProvider().name).toBe("mock");
+  });
+
+  test("mock overrides even a configured real provider", () => {
+    process.env.MOCK_DISPATCHER = "true";
+    process.env.RESEND_API_KEY = "re_test_key";
+    process.env.SMTP_HOST = "smtp.example.com";
+    expect(resolveEmailProvider().name).toBe("mock");
+  });
+
+  test('MOCK_DISPATCHER must be exactly "true"', () => {
+    process.env.MOCK_DISPATCHER = "false";
+    process.env.RESEND_API_KEY = "re_test_key";
+    expect(resolveEmailProvider().name).toBe("resend");
+  });
+
   test("resolves resend when RESEND_API_KEY is set", () => {
     process.env.RESEND_API_KEY = "re_test_key";
     expect(resolveEmailProvider().name).toBe("resend");
@@ -68,5 +91,23 @@ describe("consoleProvider", () => {
     expect(String(logs[0])).toContain("dest@example.com");
     expect(String(logs[0])).toContain("Hello");
     expect(String(logs[0])).toContain("World");
+  });
+});
+
+describe("mockProvider", () => {
+  test("resolves normally for regular recipients", async () => {
+    await expect(
+      mockProvider.send({
+        to: "dest@example.com",
+        subject: "Hi",
+        body: "Body",
+      }),
+    ).resolves.toBeUndefined();
+  });
+
+  test("throws for @fail.test recipients to exercise retries", async () => {
+    await expect(
+      mockProvider.send({ to: "dest@fail.test", subject: "Hi", body: "Body" }),
+    ).rejects.toThrow("forced failure");
   });
 });
