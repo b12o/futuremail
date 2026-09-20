@@ -76,9 +76,7 @@ function reset() {
   <div class="nb-card w-full max-w-md mx-auto">
     <template v-if="step === 'email'">
       <h2 class="font-display text-2xl uppercase mb-1">Sign in</h2>
-      <p class="text-sm mb-5 opacity-70">
-        We mail you a 6-digit code. No passwords, ever.
-      </p>
+      <p class="text-sm mb-5 opacity-70">We'll mail you a one time code.</p>
 
       <form class="flex flex-col gap-4" @submit.prevent="submitEmail">
         <div>
@@ -96,9 +94,13 @@ function reset() {
 
         <p v-if="error" class="nb-badge nb-badge-red self-start">{{ error }}</p>
 
-        <button type="submit" class="nb-btn nb-btn-yellow" :disabled="submitting">
+        <button
+          type="submit"
+          class="nb-btn nb-btn-yellow"
+          :disabled="submitting"
+        >
           <span v-if="submitting">Sending…</span>
-          <span v-else>Send code ✉</span>
+          <span v-else>Send code</span>
         </button>
       </form>
     </template>
@@ -130,7 +132,11 @@ function reset() {
 
         <p v-if="error" class="nb-badge nb-badge-red self-start">{{ error }}</p>
 
-        <button type="submit" class="nb-btn nb-btn-yellow" :disabled="submitting">
+        <button
+          type="submit"
+          class="nb-btn nb-btn-yellow"
+          :disabled="submitting"
+        >
           <span v-if="submitting">Verifying…</span>
           <span v-else>Verify & sign in</span>
         </button>
@@ -138,7 +144,7 @@ function reset() {
         <div class="flex items-center justify-between text-sm">
           <button
             type="button"
-            class="underline font-bold disabled:opacity-50"
+            class="underline font-bold disabled:opacity-50 cursor-pointer"
             :disabled="resending"
             @click="resend"
           >
@@ -146,7 +152,7 @@ function reset() {
           </button>
           <button
             type="button"
-            class="underline font-bold"
+            class="underline font-bold cursor-pointer"
             @click="reset"
           >
             Use a different email
