@@ -18,7 +18,7 @@ async function sendCode() {
 
 async function submitEmail() {
   if (!email.value.trim()) {
-    toast.error("Enter an email address");
+    toast.error("Please enter an email address");
     return;
   }
   submitting.value = true;
@@ -72,8 +72,8 @@ function reset() {
 <template>
   <div class="nb-card w-full max-w-md mx-auto">
     <template v-if="step === 'email'">
-      <h2 class="font-display text-2xl uppercase mb-1">Sign in</h2>
-      <p class="text-sm mb-5 opacity-70">We'll mail you a one time code.</p>
+      <h2 class="font-display text-2xl uppercase mb-1">Welcome!</h2>
+      <p class="text-sm mb-5 opacity-70">Please sign in to get started.</p>
 
       <form class="flex flex-col gap-4" @submit.prevent="submitEmail">
         <div>
@@ -93,8 +93,8 @@ function reset() {
           class="nb-btn nb-btn-yellow"
           :disabled="submitting"
         >
-          <span v-if="submitting">Sending…</span>
-          <span v-else>Send code</span>
+          <span v-if="submitting">One moment…</span>
+          <span v-else>Sign In</span>
         </button>
       </form>
     </template>
