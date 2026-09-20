@@ -5,6 +5,8 @@ const emit = defineEmits<{ "signed-out": [] }>();
 
 const signingOut = ref(false);
 
+const displayEmail = computed(() => truncateEmail(props.userEmail ?? ""));
+
 async function signOut() {
   signingOut.value = true;
   try {
@@ -32,9 +34,11 @@ async function signOut() {
 
       <div class="ml-auto flex items-center gap-3 flex-wrap">
         <template v-if="props.userEmail">
-          <span class="nb-badge nb-badge-lime max-w-[220px] truncate">{{
-            props.userEmail
-          }}</span>
+          <span
+            class="nb-badge nb-badge-lime max-w-full"
+            :title="props.userEmail ?? undefined"
+            >{{ displayEmail }}</span
+          >
           <button
             type="button"
             class="nb-btn nb-btn-ghost !py-1.5 !px-3 !text-xs"

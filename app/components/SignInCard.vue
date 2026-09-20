@@ -103,7 +103,9 @@ function reset() {
       <h2 class="font-display text-2xl uppercase mb-2">Check your inbox ✉</h2>
       <p class="text-sm mb-2">
         Enter the code we sent to
-        <span class="font-bold">{{ email.trim() }}</span>
+        <span class="font-bold" :title="email.trim()">{{
+          truncateEmail(email.trim())
+        }}</span>
       </p>
       <p class="text-sm mb-5 opacity-70">The code expires in 5 minutes.</p>
 

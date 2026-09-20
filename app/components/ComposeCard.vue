@@ -115,7 +115,7 @@ async function submit() {
         <label class="nb-label mb-1.5" for="compose-to">To</label>
         <input
           id="compose-to"
-          :value="userEmail"
+          :value="truncateEmail(userEmail, 80)"
           type="email"
           class="nb-input opacity-60 select-none"
           readonly
