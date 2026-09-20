@@ -1,12 +1,13 @@
 <script setup lang="ts">
 const emit = defineEmits<{ "signed-in": [] }>();
 
+const toast = useToastQueue();
+
 const email = ref("");
 const code = ref("");
 const step = ref<"email" | "code">("email");
 const submitting = ref(false);
 const resending = ref(false);
-const error = ref("");
 
 async function sendCode() {
   await $fetch("/api/auth/email-otp/send-verification-otp", {
@@ -17,16 +18,15 @@ async function sendCode() {
 
 async function submitEmail() {
   if (!email.value.trim()) {
-    error.value = "Enter an email address";
+    toast.error("Enter an email address");
     return;
   }
   submitting.value = true;
-  error.value = "";
   try {
     await sendCode();
     step.value = "code";
   } catch (e) {
-    error.value = errorMessage(e);
+    toast.error(errorMessage(e));
   } finally {
     submitting.value = false;
   }
@@ -34,11 +34,10 @@ async function submitEmail() {
 
 async function submitCode() {
   if (!/^\d{6}$/.test(code.value.trim())) {
-    error.value = "Enter the 6-digit code";
+    toast.error("Enter the 6-digit code");
     return;
   }
   submitting.value = true;
-  error.value = "";
   try {
     await $fetch("/api/auth/sign-in/email-otp", {
       method: "POST",
@@ -46,7 +45,7 @@ async function submitCode() {
     });
     emit("signed-in");
   } catch (e) {
-    error.value = errorMessage(e);
+    toast.error(errorMessage(e));
   } finally {
     submitting.value = false;
   }
@@ -54,12 +53,11 @@ async function submitCode() {
 
 async function resend() {
   resending.value = true;
-  error.value = "";
   try {
     await sendCode();
     code.value = "";
   } catch (e) {
-    error.value = errorMessage(e);
+    toast.error(errorMessage(e));
   } finally {
     resending.value = false;
   }
@@ -68,7 +66,6 @@ async function resend() {
 function reset() {
   step.value = "email";
   code.value = "";
-  error.value = "";
 }
 </script>
 
@@ -88,11 +85,8 @@ function reset() {
             class="nb-input"
             placeholder="you@example.com"
             autocomplete="email"
-            required
           />
         </div>
-
-        <p v-if="error" class="nb-badge nb-badge-red self-start">{{ error }}</p>
 
         <button
           type="submit"
@@ -129,8 +123,6 @@ function reset() {
             required
           />
         </div>
-
-        <p v-if="error" class="nb-badge nb-badge-red self-start">{{ error }}</p>
 
         <button
           type="submit"
