@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { client, db, initDb } from "../server/db";
 import { scheduledEmails } from "../server/db/schema";
 import { claimDueEmails, releaseStaleClaims } from "../server/services/claim";
-import { resolveEmailProvider } from "../server/services/email";
+import { resolveDispatcherProvider } from "../server/services/email";
 
 const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS ?? 60_000);
 const CLAIM_BATCH_SIZE = Number(process.env.CLAIM_BATCH_SIZE ?? 25);
@@ -14,7 +14,7 @@ function backoffMs(attempts: number): number {
 }
 
 async function processTick(
-  provider: ReturnType<typeof resolveEmailProvider>,
+  provider: ReturnType<typeof resolveDispatcherProvider>,
 ): Promise<void> {
   try {
     const reaped = await releaseStaleClaims(CLAIM_TIMEOUT_MS);
@@ -94,7 +94,7 @@ async function main(): Promise<void> {
   // if (autoMigrateEnabled()) {
   //   await runMigrations();
   // }
-  const provider = resolveEmailProvider();
+  const provider = resolveDispatcherProvider();
   console.log(
     `[dispatcher] starting: provider=${provider.name} poll=${POLL_INTERVAL_MS}ms batch=${CLAIM_BATCH_SIZE} retries=${JOB_RETRY_COUNT} claimTimeout=${CLAIM_TIMEOUT_MS}ms`,
   );

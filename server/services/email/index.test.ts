@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { consoleProvider, mockProvider, resolveEmailProvider } from "./index";
+import {
+  consoleProvider,
+  mockProvider,
+  resolveAuthEmailProvider,
+  resolveDispatcherProvider,
+  resolveEmailProvider,
+} from "./index";
 import type { EmailProvider } from "./index";
 
 const ENV_KEYS = [
@@ -16,24 +22,6 @@ afterEach(() => {
 });
 
 describe("resolveEmailProvider", () => {
-  test("resolves mock when MOCK_DISPATCHER=true", () => {
-    process.env.MOCK_DISPATCHER = "true";
-    expect(resolveEmailProvider().name).toBe("mock");
-  });
-
-  test("mock overrides even a configured real provider", () => {
-    process.env.MOCK_DISPATCHER = "true";
-    process.env.RESEND_API_KEY = "re_test_key";
-    process.env.SMTP_HOST = "smtp.example.com";
-    expect(resolveEmailProvider().name).toBe("mock");
-  });
-
-  test('MOCK_DISPATCHER must be exactly "true"', () => {
-    process.env.MOCK_DISPATCHER = "false";
-    process.env.RESEND_API_KEY = "re_test_key";
-    expect(resolveEmailProvider().name).toBe("resend");
-  });
-
   test("resolves resend when RESEND_API_KEY is set", () => {
     process.env.RESEND_API_KEY = "re_test_key";
     expect(resolveEmailProvider().name).toBe("resend");
@@ -62,6 +50,12 @@ describe("resolveEmailProvider", () => {
     );
   });
 
+  test("ignores MOCK_DISPATCHER (dispatcher-only override)", () => {
+    process.env.MOCK_DISPATCHER = "true";
+    process.env.NODE_ENV = "development";
+    expect(resolveEmailProvider().name).toBe("console");
+  });
+
   test("all providers satisfy the EmailProvider interface", () => {
     const providers: EmailProvider[] = [
       consoleProvider,
@@ -70,6 +64,45 @@ describe("resolveEmailProvider", () => {
     for (const provider of providers) {
       expect(typeof provider.send).toBe("function");
     }
+  });
+});
+
+describe("resolveDispatcherProvider", () => {
+  test("resolves mock when MOCK_DISPATCHER=true", () => {
+    process.env.MOCK_DISPATCHER = "true";
+    expect(resolveDispatcherProvider().name).toBe("mock");
+  });
+
+  test("mock overrides even a configured real provider", () => {
+    process.env.MOCK_DISPATCHER = "true";
+    process.env.RESEND_API_KEY = "re_test_key";
+    process.env.SMTP_HOST = "smtp.example.com";
+    expect(resolveDispatcherProvider().name).toBe("mock");
+  });
+
+  test('MOCK_DISPATCHER must be exactly "true"', () => {
+    process.env.MOCK_DISPATCHER = "false";
+    process.env.RESEND_API_KEY = "re_test_key";
+    expect(resolveDispatcherProvider().name).toBe("resend");
+  });
+
+  test("falls back to the shared resolver when not mocking", () => {
+    process.env.RESEND_API_KEY = "re_test_key";
+    expect(resolveDispatcherProvider().name).toBe("resend");
+  });
+});
+
+describe("resolveAuthEmailProvider", () => {
+  test("never mocks, so dev OTP reaches the console", () => {
+    process.env.MOCK_DISPATCHER = "true";
+    process.env.NODE_ENV = "development";
+    expect(resolveAuthEmailProvider().name).toBe("console");
+  });
+
+  test("still uses a configured real provider", () => {
+    process.env.MOCK_DISPATCHER = "true";
+    process.env.RESEND_API_KEY = "re_test_key";
+    expect(resolveAuthEmailProvider().name).toBe("resend");
   });
 });
 

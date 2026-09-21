@@ -3,7 +3,7 @@ import { emailOTP } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
 import * as schema from "./db/schema";
-import { resolveEmailProvider } from "./services/email";
+import { resolveAuthEmailProvider } from "./services/email";
 import {
   OTP_ALLOWED_ATTEMPTS,
   OTP_EXPIRES_IN_SECONDS,
@@ -25,7 +25,7 @@ export const auth = betterAuth({
       allowedAttempts: OTP_ALLOWED_ATTEMPTS,
       storeOTP: "hashed",
       sendVerificationOTP: async ({ email, otp }) => {
-        const provider = resolveEmailProvider();
+        const provider = resolveAuthEmailProvider();
         await provider.send(buildOtpEmail({ to: email, otp }));
       },
     }),
