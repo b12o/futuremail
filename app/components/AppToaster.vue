@@ -5,7 +5,7 @@ const { toasts, dismiss } = useToastQueue();
 
 const labels: Record<ToastVariant, string> = {
   error: "Error",
-  success: "Done",
+  success: "Success",
   info: "Heads up",
   warning: "Warning",
 };

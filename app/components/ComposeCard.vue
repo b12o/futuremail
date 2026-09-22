@@ -3,6 +3,8 @@ const props = defineProps<{ userEmail: string }>();
 
 const emit = defineEmits<{ scheduled: [] }>();
 
+const toast = useToastQueue();
+
 const subject = ref("");
 const body = ref("");
 const isEncrypted = ref(false);
@@ -10,7 +12,6 @@ const preset = ref<"1h" | "1d" | "1w" | "1m" | "1y" | "custom">("1d");
 const customDate = ref("");
 const submitting = ref(false);
 const error = ref("");
-const success = ref("");
 
 const presets = [
   { key: "1h", label: "1 HOUR" },
@@ -55,11 +56,8 @@ function computeSendAt(): Date {
   }
 }
 
-let successTimer: ReturnType<typeof setTimeout> | undefined;
-
 async function submit() {
   error.value = "";
-  success.value = "";
 
   if (!subject.value.trim()) {
     error.value = "Subject is required";
@@ -87,11 +85,7 @@ async function submit() {
         sendAt: sendAt.toISOString(),
       },
     });
-    success.value = `Scheduled! Arrives ${formatFullDate(created.sendAt)}`;
-    if (successTimer) clearTimeout(successTimer);
-    successTimer = setTimeout(() => {
-      success.value = "";
-    }, 6000);
+    toast.success(`On its way! ETA: ${formatFullDate(created.sendAt)}`);
     subject.value = "";
     body.value = "";
     customDate.value = "";
@@ -189,20 +183,13 @@ async function submit() {
         </p>
       </div>
 
-      <p
-        v-if="success"
-        class="nb-sticker nb-badge-green !bg-nb-green self-start"
-      >
-        {{ success }}
-      </p>
-
       <button
         type="submit"
         class="nb-btn nb-btn-pink w-full md:w-auto md:self-end"
         :disabled="submitting"
       >
         <span v-if="submitting">Scheduling…</span>
-        <span v-else>Schedule it!</span>
+        <span v-else>Send to the future!</span>
       </button>
     </form>
   </div>
