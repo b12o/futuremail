@@ -8,12 +8,13 @@ const toast = useToastQueue();
 const subject = ref("");
 const body = ref("");
 const isEncrypted = ref(false);
-const preset = ref<"1h" | "1d" | "1w" | "1m" | "1y" | "custom">("1d");
+const preset = ref<"1min" | "1h" | "1d" | "1w" | "1m" | "1y" | "custom">("1d");
 const customDate = ref("");
 const submitting = ref(false);
 const error = ref("");
 
 const presets = [
+  { key: "1min", label: "1 MIN" },
   { key: "1h", label: "1 HOUR" },
   { key: "1d", label: "1 DAY" },
   { key: "1w", label: "1 WEEK" },
@@ -35,6 +36,8 @@ const customMin = computed(() => toLocalInput(new Date(Date.now() + 60_000)));
 function computeSendAt(): Date {
   const now = new Date();
   switch (preset.value) {
+    case "1min":
+      return new Date(now.getTime() + 60_000);
     case "1h":
       return new Date(now.getTime() + 3_600_000);
     case "1d":
