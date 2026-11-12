@@ -51,10 +51,20 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 - Tailwind v4 (CSS-first config via `@import "tailwindcss"` in main.css)
 - **Email encryption uses the WebCrypto API with AES-GCM** — when a user opts to encrypt their email, encrypt and decrypt with the browser's `crypto.subtle` (AES-GCM), not a third-party crypto library. Never send plaintext subject/body for encrypted emails.
 
-## UI verification with terminal-browser
+## UI verification and browser tools
 
-- Prefer a headless terminal-browser session over a live pane when verifying UI, so the browser doesn't take over the layout.
-- Inside herdr, the alternative is to create a new tab in the active workspace and run terminal-browser there, leaving the user's pane layout alone.
+- **Use agent-browser—not terminal-browser—for automated UI verification inside herdr.** Agent-browser is genuinely headless and does not take over terminal panes or input. Pass `--headed false` explicitly so a user config cannot make it visible.
+- `agent-browser` is not on `PATH`; use the binary bundled with terminal-browser. Chrome is installed and this headless setup has been verified:
+
+  ```bash
+  AB="$HOME/.local/share/terminal-browser/app/agent-browser/bin/agent-browser"
+  "$AB" --session futuremail-ui-check --headed false open http://localhost:3000
+  "$AB" --session futuremail-ui-check snapshot
+  "$AB" --session futuremail-ui-check close
+  ```
+
+  Use a task-unique session name consistently across commands and close that session when finished. If agent-browser reports that Chrome is missing, run `"$AB" install` first; if installation fails, report visual verification as unverified or ask the user.
+- Only launch terminal-browser when the user explicitly requests a visible browser. Never run `terminal-browser open`, `terminal-browser new-tab`, or `terminal-browser ... --split ...` merely to verify UI, and never fall back to a foreground terminal-browser session when agent-browser fails.
 
 ## Gotchas
 
