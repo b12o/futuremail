@@ -49,6 +49,7 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 - `@nuxt/ui` v4 is still available, but the UI is mostly custom CSS classes
 - Auto-imports enabled (Nuxt default): `ref`, `computed`, etc. need no explicit imports
 - Tailwind v4 (CSS-first config via `@import "tailwindcss"` in main.css)
+- **Email encryption uses the WebCrypto API with AES-GCM** — when a user opts to encrypt their email, encrypt and decrypt with the browser's `crypto.subtle` (AES-GCM), not a third-party crypto library. Never send plaintext subject/body for encrypted emails.
 
 ## UI verification with terminal-browser
 
