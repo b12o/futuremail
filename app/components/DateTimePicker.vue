@@ -300,7 +300,7 @@ onBeforeUnmount(() => {
               id="nb-dtp-title"
               class="font-display text-base uppercase tracking-tight"
             >
-              Pick a moment
+              Pick a moment in the future
             </h2>
           </div>
 
@@ -387,7 +387,7 @@ onBeforeUnmount(() => {
                   :options="timeOptions"
                   label="Time"
                   direction="up"
-                  panel-class="max-h-36"
+                  panel-class="max-h-60"
                   trigger-class="font-display !text-sm"
                   @update:model-value="refreshNow"
                 />
