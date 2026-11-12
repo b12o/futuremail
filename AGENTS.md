@@ -2,6 +2,12 @@
 
 Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle). Uses Bun as package manager and Tailwind CSS v4.
 
+## Agent rules
+
+- **Never enter a rabbit hole.** If you are confused, or the next step is not obvious, stop and ask the user. Do not keep digging.
+- Do not deep-dive installed tools, binaries, or library internals unless the user explicitly asks.
+- Investigate only what the task requires; if a detour is needed, ask first.
+
 ## Commands
 
 - `bun install` — install dependencies
@@ -43,6 +49,11 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 - `@nuxt/ui` v4 is still available, but the UI is mostly custom CSS classes
 - Auto-imports enabled (Nuxt default): `ref`, `computed`, etc. need no explicit imports
 - Tailwind v4 (CSS-first config via `@import "tailwindcss"` in main.css)
+
+## UI verification with terminal-browser
+
+- Prefer a headless terminal-browser session over a live pane when verifying UI, so the browser doesn't take over the layout.
+- Inside herdr, the alternative is to create a new tab in the active workspace and run terminal-browser there, leaving the user's pane layout alone.
 
 ## Gotchas
 
