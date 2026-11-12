@@ -16,6 +16,7 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@iconify-json/lucide": "^1.2.154",
     "@libsql/client": "^0.17.4",
     "@nuxt/ui": "^4.8.2",
     "better-auth": "^1.7.3",

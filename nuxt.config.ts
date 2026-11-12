@@ -4,6 +4,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxt/ui"],
   css: ["~/assets/css/main.css"],
+  icon: {
+    clientBundle: {
+      scan: true,
+    },
+  },
   fonts: {
     families: [
       {

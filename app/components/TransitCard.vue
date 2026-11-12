@@ -56,7 +56,7 @@ watch(remainingMs, (value) => {
         >✉ TO {{ email.recipientEmail }}</span
       >
       <span v-if="email.isEncrypted" class="nb-badge nb-badge-purple">
-        <i class="i-lucide-lock text-xs" /> SEALED
+        <UIcon name="i-lucide-lock" class="size-3" /> SEALED
       </span>
       <span
         class="nb-badge ml-auto"
@@ -81,7 +81,7 @@ watch(remainingMs, (value) => {
       <span class="nb-track-line" />
       <span class="nb-track-fill" :style="{ width: `${progress}%` }" />
       <span class="nb-mail-marker" :style="{ left: `${progress}%` }">
-        <i class="i-lucide-mail text-xs" />
+        <UIcon name="i-lucide-mail" class="size-3" />
       </span>
     </div>
 
