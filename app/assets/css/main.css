@@ -338,4 +338,105 @@ body {
     transform: translateX(calc(100% + 1.5rem));
     opacity: 0;
   }
+
+  .nb-modal-enter-active,
+  .nb-modal-leave-active {
+    transition: opacity 160ms ease;
+  }
+  .nb-modal-enter-from,
+  .nb-modal-leave-to {
+    opacity: 0;
+  }
+  .nb-modal-enter-active .nb-modal-panel,
+  .nb-modal-leave-active .nb-modal-panel {
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nb-modal-enter-from .nb-modal-panel,
+  .nb-modal-leave-to .nb-modal-panel {
+    transform: translateY(10px) scale(0.98);
+  }
+
+  .nb-select-arrow {
+    position: absolute;
+    top: 50%;
+    right: 0.45rem;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    line-height: 1;
+    pointer-events: none;
+    display: none;
+  }
+
+  /* Chromium (and any engine with customizable selects) draws its own picker
+     button; hide it and draw our own arrow instead. Elsewhere the native arrow
+     stays and the custom one never shows. */
+  @supports selector(::picker-icon) {
+    select.nb-input::picker-icon {
+      display: none;
+    }
+    .nb-select-arrow {
+      display: block;
+    }
+  }
+
+  .nb-cal-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.2rem;
+    border: 2px solid transparent;
+    background-color: transparent;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: all 100ms;
+  }
+  .nb-cal-day:hover:not(:disabled) {
+    border-color: var(--color-ink);
+    background-color: var(--color-paper);
+  }
+  .nb-cal-day:disabled {
+    opacity: 0.22;
+    cursor: not-allowed;
+  }
+  .nb-cal-day-today {
+    border-color: var(--color-ink);
+    border-style: dashed;
+  }
+  .nb-cal-day-selected,
+  .nb-cal-day-selected:hover:not(:disabled) {
+    background-color: var(--color-nb-yellow);
+    border-style: solid;
+    border-color: var(--color-ink);
+    box-shadow: 3px 3px 0 var(--color-ink);
+    transform: translate(-1px, -1px);
+  }
+
+  .nb-listbox-option {
+    display: block;
+    width: 100%;
+    padding: 0.3rem 0.5rem;
+    border: 0;
+    background-color: transparent;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    text-align: left;
+    cursor: pointer;
+  }
+  .nb-listbox-option:hover:not(:disabled) {
+    background-color: var(--color-paper);
+  }
+  .nb-listbox-option:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+  .nb-listbox-option-selected {
+    background-color: var(--color-nb-yellow);
+  }
+  .nb-listbox-option-selected:hover:not(:disabled) {
+    background-color: var(--color-nb-yellow);
+  }
 }

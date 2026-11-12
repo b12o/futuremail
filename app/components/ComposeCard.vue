@@ -10,6 +10,7 @@ const body = ref("");
 const isEncrypted = ref(false);
 const preset = ref<"1min" | "1h" | "1d" | "1w" | "1m" | "1y" | "custom">("1d");
 const customDate = ref("");
+const pickerOpen = ref(false);
 const submitting = ref(false);
 const error = ref("");
 
@@ -23,15 +24,19 @@ const presets = [
   { key: "custom", label: "CUSTOM" },
 ] as const;
 
-function pad(n: number) {
-  return String(n).padStart(2, "0");
+type PresetKey = (typeof presets)[number]["key"];
+
+function selectPreset(key: PresetKey) {
+  if (key === "custom") {
+    pickerOpen.value = true;
+    return;
+  }
+  preset.value = key;
 }
 
-function toLocalInput(d: Date) {
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+function onCustomConfirmed() {
+  preset.value = "custom";
 }
-
-const customMin = computed(() => toLocalInput(new Date(Date.now() + 60_000)));
 
 function computeSendAt(): Date {
   const now = new Date();
@@ -91,6 +96,7 @@ async function submit() {
     toast.success(`On its way! ETA: ${formatFullDate(created.sendAt)}`);
     subject.value = "";
     body.value = "";
+    preset.value = "1d";
     customDate.value = "";
     emit("scheduled");
   } catch (e) {
@@ -169,18 +175,29 @@ async function submit() {
             type="button"
             class="nb-btn !shadow-[3px_3px_0_var(--color-ink)] !py-1.5 !px-3 !text-xs"
             :class="preset === p.key ? 'nb-btn-pink' : 'nb-btn-ghost'"
-            @click="preset = p.key"
+            :aria-haspopup="p.key === 'custom' ? 'dialog' : undefined"
+            @click="selectPreset(p.key)"
           >
             {{ p.label }}
           </button>
         </div>
-        <input
-          v-if="preset === 'custom'"
-          v-model="customDate"
-          type="datetime-local"
-          class="nb-input mt-2"
-          :min="customMin"
-        />
+
+        <div
+          v-if="preset === 'custom' && customDate"
+          class="mt-2 flex items-center gap-2 flex-wrap"
+        >
+          <span class="nb-badge nb-badge-yellow">
+            {{ formatFullDate(customDate) }}
+          </span>
+          <button
+            type="button"
+            class="underline text-xs font-bold cursor-pointer"
+            @click="pickerOpen = true"
+          >
+            Change
+          </button>
+        </div>
+
         <p v-if="error" class="nb-badge nb-badge-red mt-2 self-start">
           {{ error }}
         </p>
@@ -195,5 +212,11 @@ async function submit() {
         <span v-else>Send to the future!</span>
       </button>
     </form>
+
+    <DateTimePicker
+      v-model:open="pickerOpen"
+      v-model="customDate"
+      @confirm="onCustomConfirmed"
+    />
   </div>
 </template>
