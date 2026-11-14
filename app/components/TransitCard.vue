@@ -77,7 +77,7 @@ watch(remainingMs, (value) => {
     <div class="nb-track mb-2">
       <span class="nb-track-line" />
       <span class="nb-plane-marker" :style="{ left: `${progress}%` }">
-        <UIcon name="i-lucide-plane" class="size-4 rotate-[60deg]" />
+        <UIcon name="i-lucide-send-horizontal" class="size-4" />
       </span>
     </div>
 
