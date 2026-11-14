@@ -52,9 +52,6 @@ watch(remainingMs, (value) => {
 <template>
   <div class="nb-card !p-4">
     <div class="flex items-center flex-wrap gap-2 mb-3">
-      <span class="font-bold text-sm truncate"
-        >✉ TO {{ email.recipientEmail }}</span
-      >
       <span v-if="email.isEncrypted" class="nb-badge nb-badge-purple">
         <UIcon name="i-lucide-lock" class="size-3" /> SEALED
       </span>
@@ -77,21 +74,18 @@ watch(remainingMs, (value) => {
       {{ countdownText }}
     </p>
 
-    <div class="nb-track mb-1">
+    <div class="nb-track mb-2">
       <span class="nb-track-line" />
-      <span class="nb-track-fill" :style="{ width: `${progress}%` }" />
-      <span class="nb-mail-marker" :style="{ left: `${progress}%` }">
-        <UIcon name="i-lucide-mail" class="size-3" />
+      <span class="nb-plane-marker" :style="{ left: `${progress}%` }">
+        <UIcon name="i-lucide-plane" class="size-4 rotate-[60deg]" />
       </span>
     </div>
 
     <div
-      class="flex justify-between text-[0.65rem] font-bold uppercase tracking-wider mb-2 opacity-80"
+      class="flex justify-between text-[0.65rem] font-bold uppercase tracking-wider opacity-80"
     >
       <span>Departed {{ formatShortDate(email.createdAt) }}</span>
       <span>Arrives {{ formatShortDate(email.sendAt) }}</span>
     </div>
-
-    <p class="text-xs opacity-60">{{ formatFullDate(email.sendAt) }}</p>
   </div>
 </template>
