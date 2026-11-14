@@ -30,7 +30,11 @@ const inTransit = computed(() =>
 );
 
 const delivered = computed(() =>
-  rows.value.filter((r) => r.status === "delivered"),
+  rows.value
+    .filter((r) => r.status === "delivered")
+    .sort(
+      (a, b) => new Date(b.sendAt).getTime() - new Date(a.sendAt).getTime(),
+    ),
 );
 
 const failed = computed(() => rows.value.filter((r) => r.status === "failed"));
