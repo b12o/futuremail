@@ -70,6 +70,13 @@ defineExpose({ refresh });
           class="nb-card !shadow-[3px_3px_0_var(--color-ink)] !p-3 flex items-center gap-3 flex-wrap"
         >
           <span class="nb-badge nb-badge-green">DELIVERED</span>
+          <span
+            v-if="email.isEncrypted"
+            class="nb-badge nb-badge-purple"
+            title="Sealed"
+          >
+            <UIcon name="i-lucide-lock" class="size-3" />
+          </span>
           <span class="font-bold text-sm truncate">{{ email.subject ?? "(no subject)" }}</span>
           <span class="text-xs opacity-60 truncate">→ {{ email.recipientEmail }}</span>
           <span class="ml-auto text-xs font-bold whitespace-nowrap">
