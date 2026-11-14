@@ -51,19 +51,24 @@ watch(remainingMs, (value) => {
       <p class="font-display text-lg" :class="{ 'nb-pulse': remainingMs <= 0 }">
         {{ countdownText }}
       </p>
-      <span v-if="email.isEncrypted" class="nb-badge nb-badge-purple ml-auto">
-        <UIcon name="i-lucide-lock" class="size-3" /> SEALED
-      </span>
-      <span
-        class="nb-badge"
-        :class="
-          email.status === 'sending'
-            ? 'nb-badge-cyan nb-pulse'
-            : 'nb-badge-yellow'
-        "
+      <div
+        v-if="email.isEncrypted || email.status === 'sending'"
+        class="flex items-center gap-2 ml-auto"
       >
-        {{ email.status === "sending" ? "SENDING NOW" : "IN TRANSIT" }}
-      </span>
+        <span
+          v-if="email.isEncrypted"
+          class="nb-badge nb-badge-purple"
+          title="Sealed"
+        >
+          <UIcon name="i-lucide-lock" class="size-3" />
+        </span>
+        <span
+          v-if="email.status === 'sending'"
+          class="nb-badge nb-badge-cyan nb-pulse"
+        >
+          SENDING NOW
+        </span>
+      </div>
     </div>
 
     <div class="nb-track mb-1.5">
