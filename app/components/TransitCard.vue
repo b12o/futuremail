@@ -11,23 +11,19 @@ const remainingMs = computed(
 );
 
 const countdownText = computed(() => {
-  if (remainingMs.value <= 5000) return "ALMOST THERE…";
-  else return `ARRIVES IN ${countdown.value}`;
+  const ms = remainingMs.value;
+  if (ms <= 0) return "ARRIVES IN 0 SECONDS";
+  const days = Math.floor(ms / 86_400_000);
+  if (days >= 1) return `ARRIVES IN ${days} ${days === 1 ? "DAY" : "DAYS"}`;
+  const hours = Math.floor(ms / 3_600_000);
+  if (hours >= 1)
+    return `ARRIVES IN ${hours} ${hours === 1 ? "HOUR" : "HOURS"}`;
+  const minutes = Math.floor(ms / 60_000);
+  if (minutes >= 1)
+    return `ARRIVES IN ${minutes} ${minutes === 1 ? "MINUTE" : "MINUTES"}`;
+  const seconds = Math.ceil(ms / 1000);
+  return `ARRIVES IN ${seconds} ${seconds === 1 ? "SECOND" : "SECONDS"}`;
 });
-
-const countdown = computed(() => {
-  const total = Math.floor(remainingMs.value / 1000);
-  const d = Math.floor(total / 86_400);
-  const h = Math.floor((total % 86_400) / 3_600);
-  const m = Math.floor((total % 3_600) / 60);
-  const s = total % 60;
-  const clock = `${pad(h)}:${pad(m)}:${pad(s)}`;
-  return d > 0 ? `${pad(d)}d ${clock}` : clock;
-});
-
-function pad(n: number) {
-  return String(n).padStart(2, "0");
-}
 
 const progress = computed(() => {
   const start = new Date(props.email.createdAt).getTime();
@@ -50,13 +46,16 @@ watch(remainingMs, (value) => {
 </script>
 
 <template>
-  <div class="nb-card !p-4">
-    <div class="flex items-center flex-wrap gap-2 mb-3">
-      <span v-if="email.isEncrypted" class="nb-badge nb-badge-purple">
+  <div class="nb-card !p-3">
+    <div class="flex items-center flex-wrap gap-2 mb-2">
+      <p class="font-display text-lg" :class="{ 'nb-pulse': remainingMs <= 0 }">
+        {{ countdownText }}
+      </p>
+      <span v-if="email.isEncrypted" class="nb-badge nb-badge-purple ml-auto">
         <UIcon name="i-lucide-lock" class="size-3" /> SEALED
       </span>
       <span
-        class="nb-badge ml-auto"
+        class="nb-badge"
         :class="
           email.status === 'sending'
             ? 'nb-badge-cyan nb-pulse'
@@ -67,14 +66,7 @@ watch(remainingMs, (value) => {
       </span>
     </div>
 
-    <p
-      class="font-display text-2xl mb-3"
-      :class="{ 'nb-pulse': remainingMs <= 0 }"
-    >
-      {{ countdownText }}
-    </p>
-
-    <div class="nb-track mb-2">
+    <div class="nb-track mb-1.5">
       <span class="nb-track-line" />
       <span class="nb-plane-marker" :style="{ left: `${progress}%` }">
         <UIcon name="i-lucide-send-horizontal" class="size-4" />
