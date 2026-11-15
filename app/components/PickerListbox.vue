@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
       role="listbox"
       :aria-label="label"
       tabindex="-1"
-      class="absolute left-0 z-20 w-full overflow-y-auto bg-white border-[3px] border-ink shadow-[4px_4px_0_var(--color-ink)] py-1"
+      class="absolute left-0 z-20 w-full overflow-y-auto bg-surface border-[3px] border-ink shadow-[4px_4px_0_var(--color-ink)] py-1"
       :class="[
         direction === 'up' ? 'bottom-full mb-1' : 'top-full mt-1',
         panelClass,

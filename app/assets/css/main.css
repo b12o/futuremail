@@ -1,9 +1,30 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+:root {
+  --paper: #fff6e5;
+  --ink: #111111;
+  --surface: #ffffff;
+  --on-accent: #111111;
+  --scrim: #111111;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #1b1712;
+  --ink: #f2e9d5;
+  --surface: #241f18;
+  --on-accent: #111111;
+  --scrim: #000000;
+  color-scheme: dark;
+}
+
 @theme {
-  --color-paper: #fff6e5;
-  --color-ink: #111111;
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-on-accent: var(--on-accent);
+  --color-scrim: var(--scrim);
 
   --color-nb-yellow: #ffd23f;
   --color-nb-pink: #ff5d8f;
@@ -26,12 +47,12 @@ body {
 
 ::selection {
   background-color: var(--color-nb-yellow);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 
 @layer components {
   .nb-card {
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border: 3px solid var(--color-ink);
     border-radius: 0;
     box-shadow: 6px 6px 0 var(--color-ink);
@@ -56,7 +77,7 @@ body {
     border-radius: 0;
     box-shadow: 4px 4px 0 var(--color-ink);
     padding: 0.6rem 1.1rem;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     color: var(--color-ink);
     cursor: pointer;
     transition: all 100ms;
@@ -76,18 +97,20 @@ body {
   }
   .nb-btn-yellow {
     background-color: var(--color-nb-yellow);
+    color: var(--color-on-accent);
   }
   .nb-btn-pink {
     background-color: var(--color-nb-pink);
+    color: var(--color-on-accent);
   }
   .nb-btn-ghost {
-    background-color: #ffffff;
+    background-color: var(--color-surface);
   }
 
   .nb-input,
   .nb-textarea {
     width: 100%;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border: 3px solid var(--color-ink);
     border-radius: 0;
     box-shadow: 3px 3px 0 var(--color-ink);
@@ -100,13 +123,17 @@ body {
   }
   .nb-input::placeholder,
   .nb-textarea::placeholder {
-    color: rgba(17, 17, 17, 0.4);
+    color: color-mix(in srgb, var(--color-ink) 40%, transparent);
     font-weight: 400;
   }
   .nb-input:focus,
   .nb-textarea:focus {
     box-shadow: 4px 4px 0 var(--color-ink);
-    background-color: color-mix(in srgb, var(--color-nb-yellow) 10%, #ffffff);
+    background-color: color-mix(
+      in srgb,
+      var(--color-nb-yellow) 10%,
+      var(--color-surface)
+    );
   }
 
   .nb-badge {
@@ -121,33 +148,41 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 2px 10px;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     color: var(--color-ink);
     white-space: nowrap;
   }
   .nb-badge-yellow {
     background-color: var(--color-nb-yellow);
+    color: var(--color-on-accent);
   }
   .nb-badge-pink {
     background-color: var(--color-nb-pink);
+    color: var(--color-on-accent);
   }
   .nb-badge-cyan {
     background-color: var(--color-nb-cyan);
+    color: var(--color-on-accent);
   }
   .nb-badge-lime {
     background-color: var(--color-nb-lime);
+    color: var(--color-on-accent);
   }
   .nb-badge-purple {
     background-color: var(--color-nb-purple);
+    color: var(--color-on-accent);
   }
   .nb-badge-orange {
     background-color: var(--color-nb-orange);
+    color: var(--color-on-accent);
   }
   .nb-badge-red {
     background-color: var(--color-nb-red);
+    color: var(--color-on-accent);
   }
   .nb-badge-green {
     background-color: var(--color-nb-green);
+    color: var(--color-on-accent);
   }
 
   .nb-label {
@@ -169,7 +204,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 3px 10px;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     color: var(--color-ink);
     transform: rotate(-2deg);
     white-space: nowrap;
@@ -230,7 +265,7 @@ body {
   .nb-toast {
     position: relative;
     width: min(22rem, calc(100vw - 2rem));
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border: 3px solid var(--color-ink);
     box-shadow: 6px 6px 0 var(--color-ink);
     overflow: hidden;
@@ -253,7 +288,7 @@ body {
   .nb-toast-track {
     height: 6px;
     border-top: 2px solid var(--color-ink);
-    background-color: #ffffff;
+    background-color: var(--color-surface);
   }
 
   .nb-toast-progress {
@@ -394,6 +429,7 @@ body {
   .nb-cal-day-selected,
   .nb-cal-day-selected:hover:not(:disabled) {
     background-color: var(--color-nb-yellow);
+    color: var(--color-on-accent);
     border-style: solid;
     border-color: var(--color-ink);
     box-shadow: 3px 3px 0 var(--color-ink);
@@ -421,8 +457,10 @@ body {
   }
   .nb-listbox-option-selected {
     background-color: var(--color-nb-yellow);
+    color: var(--color-on-accent);
   }
   .nb-listbox-option-selected:hover:not(:disabled) {
     background-color: var(--color-nb-yellow);
+    color: var(--color-on-accent);
   }
 }

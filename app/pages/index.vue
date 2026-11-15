@@ -34,9 +34,9 @@ async function onSignedOut() {
 
       <div v-else-if="!signedIn" class="py-10">
         <div class="flex justify-center gap-4 flex-wrap mb-8">
-          <span class="nb-sticker !bg-nb-yellow">Self-hosted</span>
-          <span class="nb-sticker nb-sticker-r !bg-nb-pink">No tracking</span>
-          <span class="nb-sticker !bg-nb-cyan">Time-proof</span>
+          <span class="nb-sticker !bg-nb-yellow !text-on-accent">Self-hosted</span>
+          <span class="nb-sticker nb-sticker-r !bg-nb-pink !text-on-accent">No tracking</span>
+          <span class="nb-sticker !bg-nb-cyan !text-on-accent">Time-proof</span>
         </div>
         <SignInCard @signed-in="refreshSession" />
       </div>

@@ -284,7 +284,7 @@ onBeforeUnmount(() => {
     <Transition name="nb-modal">
       <div
         v-if="open"
-        class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-ink/75"
+        class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-scrim/75"
         @mousedown.self="cancel"
       >
         <div
@@ -293,9 +293,9 @@ onBeforeUnmount(() => {
           aria-modal="true"
           aria-labelledby="nb-dtp-title"
           tabindex="-1"
-          class="nb-modal-panel w-full max-w-sm bg-white border-[3px] border-ink shadow-[8px_8px_0_var(--color-ink)] outline-none"
+          class="nb-modal-panel w-full max-w-sm bg-surface border-[3px] border-ink shadow-[8px_8px_0_var(--color-ink)] outline-none"
         >
-          <div class="border-b-[3px] border-ink bg-nb-yellow px-3 py-2.5">
+          <div class="border-b-[3px] border-ink bg-nb-yellow text-on-accent px-3 py-2.5">
             <h2
               id="nb-dtp-title"
               class="font-display text-base uppercase tracking-tight"

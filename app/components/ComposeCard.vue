@@ -156,7 +156,7 @@ async function submit() {
         >
           <input v-model="isEncrypted" type="checkbox" class="peer sr-only" />
           <span
-            class="w-6 h-6 border-[3px] border-ink bg-white flex items-center justify-center shadow-[3px_3px_0_var(--color-ink)] transition-colors peer-checked:bg-nb-purple [&>*]:opacity-0 peer-checked:[&>*]:opacity-100"
+            class="w-6 h-6 border-[3px] border-ink bg-surface flex items-center justify-center shadow-[3px_3px_0_var(--color-ink)] transition-colors peer-checked:bg-nb-purple text-on-accent [&>*]:opacity-0 peer-checked:[&>*]:opacity-100"
           >
             <UIcon name="i-lucide-lock" class="size-3.5" />
           </span>

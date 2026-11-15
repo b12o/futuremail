@@ -5,6 +5,12 @@ const emit = defineEmits<{ "signed-out": [] }>();
 
 const signingOut = ref(false);
 
+const colorMode = useColorMode();
+
+function toggleColorMode() {
+  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+}
+
 const displayEmail = computed(() => truncateEmail(props.userEmail ?? ""));
 
 async function signOut() {
@@ -33,6 +39,17 @@ async function signOut() {
       </div>
 
       <div class="ml-auto flex items-center gap-3 flex-wrap">
+        <button
+          type="button"
+          class="nb-btn nb-btn-ghost !py-1.5 !px-3"
+          aria-label="Toggle dark mode"
+          title="Toggle dark mode"
+          @click="toggleColorMode"
+        >
+          <UIcon name="i-lucide-moon" class="size-4 dark:hidden" />
+          <UIcon name="i-lucide-sun" class="size-4 hidden dark:inline-flex" />
+        </button>
+
         <template v-if="props.userEmail">
           <span
             class="nb-badge nb-badge-lime max-w-full"
@@ -48,7 +65,7 @@ async function signOut() {
             Sign out
           </button>
         </template>
-        <span v-else class="nb-sticker nb-sticker-r !bg-nb-cyan"
+        <span v-else class="nb-sticker nb-sticker-r !bg-nb-cyan !text-on-accent"
           >Self-hosted</span
         >
       </div>
