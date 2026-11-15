@@ -5,6 +5,7 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 ## Agent rules
 
 - **Never enter a rabbit hole.** If you are confused, or the next step is not obvious, stop and ask the user. Do not keep digging.
+- **Do not commit automatically.** Never run `git commit` (or create/switch branches) without the user's explicit go-ahead. Leave changes uncommitted in the working tree and report; wait for approval.
 - Do not deep-dive installed tools, binaries, or library internals unless the user explicitly asks.
 - Investigate only what the task requires; if a detour is needed, ask first.
 
