@@ -54,18 +54,8 @@ Nuxt 4 + @nuxt/ui v4 single-page app with a Nitro backend (better-auth + drizzle
 
 ## UI verification and browser tools
 
-- **Use agent-browser—not terminal-browser—for automated UI verification inside herdr.** Agent-browser is genuinely headless and does not take over terminal panes or input. Pass `--headed false` explicitly so a user config cannot make it visible.
-- `agent-browser` is not on `PATH`; use the binary bundled with terminal-browser. Chrome is installed and this headless setup has been verified:
-
-  ```bash
-  AB="$HOME/.local/share/terminal-browser/app/agent-browser/bin/agent-browser"
-  "$AB" --session futuremail-ui-check --headed false open http://localhost:3000
-  "$AB" --session futuremail-ui-check snapshot
-  "$AB" --session futuremail-ui-check close
-  ```
-
-  Use a task-unique session name consistently across commands and close that session when finished. If agent-browser reports that Chrome is missing, run `"$AB" install` first; if installation fails, report visual verification as unverified or ask the user.
-- Only launch terminal-browser when the user explicitly requests a visible browser. Never run `terminal-browser open`, `terminal-browser new-tab`, or `terminal-browser ... --split ...` merely to verify UI, and never fall back to a foreground terminal-browser session when agent-browser fails.
+- **Load the `ui-verification` skill** (`.agents/skills/ui-verification/SKILL.md`) before any browser-based UI check. It covers the `agent-browser` binary at `~/.local/bin/agent-browser`, the headless invocation (`--headed false`, task-unique session, close when done), what to assert, and the known traps.
+- **Do not use `terminal-browser` for verification in this project.** No `terminal-browser open`, `new-tab`, `--split`, or `terminal-browser action` for UI checks, and no falling back to it when agent-browser fails. Only launch a visible browser when the user explicitly asks for one; if agent-browser is unavailable, report the check as unverified.
 
 ## Gotchas
 
