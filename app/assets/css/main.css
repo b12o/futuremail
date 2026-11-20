@@ -360,21 +360,67 @@ body {
     opacity: 0;
   }
 
-  .nb-modal-enter-active,
-  .nb-modal-leave-active {
-    transition: opacity 160ms ease;
-  }
-  .nb-modal-enter-from,
-  .nb-modal-leave-to {
+  .nb-modal {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    border: 3px solid var(--color-ink);
+    box-shadow: 8px 8px 0 var(--color-ink);
+    padding: 0;
+    max-width: min(24rem, calc(100vw - 2rem));
     opacity: 0;
+    /* MANDATORY per top-layer animation guidance: transition display and
+       overlay so the exit fade runs before the dialog leaves the top layer.
+       transition-behavior is declared separately because the shorthand would
+       make older browsers drop the whole transition declaration. */
+    transition-property: opacity, transform, display, overlay;
+    transition-duration: 160ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-behavior: allow-discrete;
+    @media (prefers-reduced-motion: no-preference) {
+      transform: translateY(10px) scale(0.98);
+    }
   }
-  .nb-modal-enter-active .nb-modal-panel,
-  .nb-modal-leave-active .nb-modal-panel {
-    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  .nb-modal[open] {
+    opacity: 1;
+    @starting-style {
+      opacity: 0;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      transform: none;
+      @starting-style {
+        transform: translateY(10px) scale(0.98);
+      }
+    }
   }
-  .nb-modal-enter-from .nb-modal-panel,
-  .nb-modal-leave-to .nb-modal-panel {
-    transform: translateY(10px) scale(0.98);
+  .nb-modal::backdrop {
+    overflow: hidden;
+    overscroll-behavior: contain;
+    background-color: transparent;
+    transition-property: background-color, display, overlay;
+    transition-duration: 160ms;
+    transition-timing-function: ease;
+    transition-behavior: allow-discrete;
+  }
+  .nb-modal[open]::backdrop {
+    background-color: color-mix(in srgb, var(--color-scrim) 75%, transparent);
+    @starting-style {
+      background-color: transparent;
+    }
+  }
+  /* Without these, scrolling over the backdrop or inside the dialog scrolls
+     the page behind it. Progressive enhancement: ignored where unsupported,
+     and never replaced with an overflow: hidden body lock (which removes the
+     root scrollbar and shifts layout). Tailwind's preflight resets dialog
+     margins, so the UA's margin:auto centering must be restored explicitly. */
+  .nb-modal:modal {
+    overscroll-behavior: contain;
+    margin: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nb-modal,
+    .nb-modal::backdrop {
+      transition-duration: 100ms;
+    }
   }
 
   .nb-select-arrow {

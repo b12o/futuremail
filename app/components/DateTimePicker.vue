@@ -37,7 +37,7 @@ const viewMonth = ref(new Date().getMonth());
 const selectedDay = ref(new Date().getDate());
 const slot = ref(0);
 
-const dialogEl = ref<HTMLElement | null>(null);
+const dialogEl = ref<HTMLDialogElement | null>(null);
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -209,142 +209,113 @@ function cancel() {
   open.value = false;
 }
 
-function focusables(): HTMLElement[] {
-  const root = dialogEl.value;
-  if (!root) return [];
-  return Array.from(
-    root.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), select:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-    ),
-  );
+/* Light-dismiss fallback for engines without `closedby` support (e.g. Safari):
+   a press that starts and ends on the backdrop closes the dialog. Tests the
+   pointer coordinates, not event.target — the dialog is also the target for
+   its own padding and the gaps between its children. */
+function ensureLightDismiss(dialog: HTMLDialogElement) {
+  if ("closedBy" in HTMLDialogElement.prototype) return;
+  if (dialog.dataset.lightDismissBound) return;
+  dialog.dataset.lightDismissBound = "true";
+
+  const outside = (e: PointerEvent) => {
+    const r = dialog.getBoundingClientRect();
+    return (
+      e.clientX < r.left ||
+      e.clientX > r.right ||
+      e.clientY < r.top ||
+      e.clientY > r.bottom
+    );
+  };
+
+  let pressedOutside = false;
+  dialog.addEventListener("pointerdown", (e) => {
+    pressedOutside = outside(e);
+  });
+  dialog.addEventListener("pointerup", (e) => {
+    if (pressedOutside && outside(e)) dialog.close();
+  });
 }
 
-function onKeydown(event: KeyboardEvent) {
-  if (event.defaultPrevented) return;
-  if (event.key === "Escape") {
-    event.preventDefault();
-    cancel();
-    return;
-  }
-  if (event.key !== "Tab") return;
-
-  const items = focusables();
-  if (items.length === 0) return;
-
-  const first = items[0];
-  const last = items[items.length - 1];
-  if (!first || !last) return;
-
-  const active = document.activeElement as HTMLElement | null;
-
-  if (!event.shiftKey && active === last) {
-    event.preventDefault();
-    first.focus();
-  } else if (
-    event.shiftKey &&
-    (active === first || !dialogEl.value?.contains(active))
-  ) {
-    event.preventDefault();
-    last.focus();
-  }
-}
-
-let previousOverflow = "";
-let restoreFocus: HTMLElement | null = null;
-
+// The native modal handles focus containment, Esc, top layer, and returning
+// focus to the invoker; `@close` keeps the open model in sync no matter how
+// the dialog was dismissed (Esc, backdrop click, or a button).
 watch(open, (isOpen) => {
   if (!import.meta.client) return;
+  const dialog = dialogEl.value;
+  if (!dialog) return;
 
   if (isOpen) {
     refreshNow();
     syncDraft();
-    restoreFocus = document.activeElement as HTMLElement | null;
-    previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeydown);
-    nextTick(() => dialogEl.value?.focus());
-    return;
+    ensureLightDismiss(dialog);
+    dialog.showModal();
+  } else {
+    dialog.close();
   }
-
-  document.body.style.overflow = previousOverflow;
-  window.removeEventListener("keydown", onKeydown);
-  restoreFocus?.focus();
-  restoreFocus = null;
-});
-
-onBeforeUnmount(() => {
-  if (!import.meta.client) return;
-  document.body.style.overflow = previousOverflow;
-  window.removeEventListener("keydown", onKeydown);
 });
 </script>
 
 <template>
   <Teleport to="body">
-    <Transition name="nb-modal">
-      <div
-        v-if="open"
-        class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-scrim/75"
-        @mousedown.self="cancel"
-      >
-        <div
-          ref="dialogEl"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="nb-dtp-title"
-          tabindex="-1"
-          class="nb-modal-panel w-full max-w-sm bg-surface border-[3px] border-ink shadow-[8px_8px_0_var(--color-ink)] outline-none"
+    <dialog
+      ref="dialogEl"
+      class="nb-modal"
+      aria-labelledby="nb-dtp-title"
+      closedby="any"
+      @close="open = false"
+    >
+      <div class="border-b-[3px] border-ink bg-nb-yellow text-on-accent px-3 py-2.5">
+        <h2
+          id="nb-dtp-title"
+          class="font-display text-base uppercase tracking-tight"
         >
-          <div class="border-b-[3px] border-ink bg-nb-yellow text-on-accent px-3 py-2.5">
-            <h2
-              id="nb-dtp-title"
-              class="font-display text-base uppercase tracking-tight"
-            >
-              Pick a moment in the future
-            </h2>
+          Pick a moment in the future
+        </h2>
+      </div>
+
+      <div class="p-3">
+        <div class="flex items-center gap-1.5">
+          <button
+            type="button"
+            class="nb-btn nb-btn-ghost !p-0 w-8 h-8 shrink-0"
+            aria-label="Previous month"
+            :disabled="!canGoPrev"
+            @click="shiftMonth(-1)"
+          >
+            <span class="text-base font-bold leading-none">←</span>
+          </button>
+
+          <div class="flex-1 min-w-0">
+            <PickerListbox
+              v-model="viewMonth"
+              :options="monthOptions"
+              label="Month"
+              panel-class="max-h-60"
+              trigger-class="!text-xs font-bold uppercase"
+              autofocus
+              @update:model-value="onPeriodChange"
+            />
           </div>
 
-          <div class="p-3">
-            <div class="flex items-center gap-1.5">
-              <button
-                type="button"
-                class="nb-btn nb-btn-ghost !p-0 w-8 h-8 shrink-0"
-                aria-label="Previous month"
-                :disabled="!canGoPrev"
-                @click="shiftMonth(-1)"
-              >
-                <span class="text-base font-bold leading-none">←</span>
-              </button>
+          <PickerListbox
+            v-model="viewYear"
+            :options="yearOptions"
+            label="Year"
+            panel-class="max-h-60"
+            trigger-class="!text-xs font-bold"
+            @update:model-value="onPeriodChange"
+          />
 
-              <div class="flex-1 min-w-0">
-                <PickerListbox
-                  v-model="viewMonth"
-                  :options="monthOptions"
-                  label="Month"
-                  panel-class="max-h-60"
-                  trigger-class="!text-xs font-bold uppercase"
-                  @update:model-value="onPeriodChange"
-                />
-              </div>
-
-              <PickerListbox
-                v-model="viewYear"
-                :options="yearOptions"
-                label="Year"
-                panel-class="max-h-60"
-                trigger-class="!text-xs font-bold"
-                @update:model-value="onPeriodChange"
-              />
-
-              <button
-                type="button"
-                class="nb-btn nb-btn-ghost !p-0 w-8 h-8 shrink-0"
-                aria-label="Next month"
-                @click="shiftMonth(1)"
-              >
-                <span class="text-base font-bold leading-none">→</span>
-              </button>
-            </div>
+          <button
+            type="button"
+            class="nb-btn nb-btn-ghost !p-0 w-8 h-8 shrink-0"
+            aria-label="Next month"
+            @click="shiftMonth(1)"
+          >
+            <span class="text-base font-bold leading-none">→</span>
+          </button>
+        </div>
 
             <div class="grid grid-cols-7 gap-1 mt-3 mb-1">
               <span
@@ -400,7 +371,7 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="h-7 mt-2 flex items-center">
-              <p v-if="invalid" class="nb-badge nb-badge-red">
+              <p v-if="invalid" class="nb-badge nb-badge-red" role="status">
                 Must be in the future
               </p>
             </div>
@@ -425,8 +396,6 @@ onBeforeUnmount(() => {
               Set date
             </button>
           </div>
-        </div>
-      </div>
-    </Transition>
+    </dialog>
   </Teleport>
 </template>

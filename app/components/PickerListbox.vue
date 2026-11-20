@@ -8,8 +8,9 @@ const props = withDefaults(
     direction?: "up" | "down";
     panelClass?: string;
     triggerClass?: string;
+    autofocus?: boolean;
   }>(),
-  { direction: "down", panelClass: "", triggerClass: "" },
+  { direction: "down", panelClass: "", triggerClass: "", autofocus: false },
 );
 
 const open = ref(false);
@@ -47,7 +48,9 @@ function enabledOptions(): HTMLElement[] {
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === "Escape") {
+  // Only capture Escape while the panel is actually open; otherwise let it
+  // bubble so a containing native <dialog> can close itself.
+  if (event.key === "Escape" && open.value) {
     event.preventDefault();
     close(true);
     return;
@@ -116,6 +119,7 @@ onBeforeUnmount(() => {
       aria-haspopup="listbox"
       :aria-expanded="open"
       :aria-label="`${label}: ${selectedLabel}`"
+      :autofocus="autofocus"
       @click="toggle"
     >
       {{ selectedLabel }}
