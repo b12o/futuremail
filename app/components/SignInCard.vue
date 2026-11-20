@@ -17,10 +17,6 @@ async function sendCode() {
 }
 
 async function submitEmail() {
-  if (!email.value.trim()) {
-    toast.error("Please enter an email address");
-    return;
-  }
   submitting.value = true;
   try {
     await sendCode();
@@ -33,10 +29,6 @@ async function submitEmail() {
 }
 
 async function submitCode() {
-  if (!/^\d{6}$/.test(code.value.trim())) {
-    toast.error("Enter the 6-digit code");
-    return;
-  }
   submitting.value = true;
   try {
     await $fetch("/api/auth/sign-in/email-otp", {
@@ -85,6 +77,9 @@ function reset() {
             class="nb-input"
             placeholder="you@example.com"
             autocomplete="email"
+            required
+            spellcheck="false"
+            enterkeyhint="next"
           />
         </div>
 
@@ -123,6 +118,7 @@ function reset() {
             maxlength="6"
             autocomplete="one-time-code"
             required
+            enterkeyhint="done"
           />
         </div>
 

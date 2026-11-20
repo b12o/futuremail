@@ -14,6 +14,8 @@ const pickerOpen = ref(false);
 const submitting = ref(false);
 const error = ref("");
 
+const bodyInput = useTemplateRef<HTMLTextAreaElement>("bodyInput");
+
 const presets = [
   { key: "1min", label: "1 MIN" },
   { key: "1h", label: "1 HOUR" },
@@ -67,12 +69,11 @@ function computeSendAt(): Date {
 async function submit() {
   error.value = "";
 
-  if (!subject.value.trim()) {
-    error.value = "Subject is required";
-    return;
-  }
+  // `required` handles empty fields natively; a whitespace-only message does
+  // not, so back it with a custom validity message (cleared on input below).
   if (!body.value.trim()) {
-    error.value = "Message is required";
+    bodyInput.value?.setCustomValidity("Enter a message (not just spaces).");
+    bodyInput.value?.reportValidity();
     return;
   }
 
@@ -135,6 +136,8 @@ async function submit() {
           type="text"
           class="nb-input"
           placeholder="Hello from the past…"
+          required
+          pattern=".*\S.*"
         />
       </div>
 
@@ -142,10 +145,13 @@ async function submit() {
         <label class="nb-label mb-1.5" for="compose-body">Message</label>
         <textarea
           id="compose-body"
+          ref="bodyInput"
           v-model="body"
           class="nb-textarea"
           rows="6"
           placeholder="Dear future me…"
+          required
+          @input="bodyInput?.setCustomValidity('')"
         />
       </div>
 
@@ -156,7 +162,7 @@ async function submit() {
         >
           <input v-model="isEncrypted" type="checkbox" class="peer sr-only" />
           <span
-            class="w-6 h-6 border-[3px] border-ink bg-surface flex items-center justify-center shadow-[3px_3px_0_var(--color-ink)] transition-colors peer-checked:bg-nb-purple text-on-accent [&>*]:opacity-0 peer-checked:[&>*]:opacity-100"
+            class="w-6 h-6 border-[3px] border-ink bg-surface flex items-center justify-center shadow-[3px_3px_0_var(--color-ink)] transition-colors peer-checked:bg-nb-purple peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 text-on-accent [&>*]:opacity-0 peer-checked:[&>*]:opacity-100"
           >
             <UIcon name="i-lucide-lock" class="size-3.5" />
           </span>
@@ -198,7 +204,7 @@ async function submit() {
           </button>
         </div>
 
-        <p v-if="error" class="nb-badge nb-badge-red mt-2 self-start">
+        <p v-if="error" class="nb-badge nb-badge-red mt-2 self-start" role="alert">
           {{ error }}
         </p>
       </div>

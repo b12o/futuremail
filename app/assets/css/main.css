@@ -135,6 +135,13 @@ body {
       var(--color-surface)
     );
   }
+  /* Error styling only after the user has interacted with the field (or
+     attempted submit) — never on page load for empty required fields. The
+     red matches the error pill; the input keeps its normal ink shadow. */
+  .nb-input:user-invalid,
+  .nb-textarea:user-invalid {
+    border-color: var(--color-nb-red);
+  }
 
   .nb-badge {
     display: inline-flex;
