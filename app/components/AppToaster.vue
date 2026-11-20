@@ -19,7 +19,13 @@ const variants: Record<ToastVariant, string> = {
 </script>
 
 <template>
-  <div class="nb-toaster" aria-live="polite" aria-atomic="false">
+  <div
+    class="nb-toaster"
+    role="region"
+    aria-label="Notifications"
+    aria-live="polite"
+    aria-atomic="false"
+  >
     <TransitionGroup name="nb-toast">
       <div
         v-for="toast in toasts"
