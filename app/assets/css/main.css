@@ -246,7 +246,11 @@ body {
   }
 
   .nb-pulse {
-    animation: nb-pulse 1.2s ease-in-out infinite;
+    /* Opt in to motion rather than declaring it broadly and canceling it:
+     users who prefer reduced motion get the static state. */
+    @media (prefers-reduced-motion: no-preference) {
+      animation: nb-pulse 1.2s ease-in-out infinite;
+    }
   }
   @keyframes nb-pulse {
     0%,
@@ -255,6 +259,14 @@ body {
     }
     50% {
       opacity: 0.45;
+    }
+  }
+
+  /* Loading skeletons are pure decoration; stop the pulsing for users who
+     prefer reduced motion (the blocks stay visible). */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pulse {
+      animation: none;
     }
   }
 
